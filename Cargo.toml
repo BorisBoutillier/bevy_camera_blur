@@ -1,0 +1,21 @@
+[package]
+name = "bevy_camera_blur"
+version = "0.1.0"
+edition = "2021"
+description = "Camera blurring post-processing effects for the Bevy game engine"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/BorisBoutillier/bevy_camera_blur"
+homepage = "https://github.com/BorisBoutillier/bevy_camera_blur"
+categories = ["games","game-development"]
+keywords = ["bevy","blur"]
+readme = "README.md"
+
+[dependencies]
+
+[dependencies.bevy]
+version = "0.12"
+default-features = false
+features = ["bevy_core_pipeline" , "bevy_render"]
+
+[dev-dependencies]
+bevy = {version ="0.12" }
