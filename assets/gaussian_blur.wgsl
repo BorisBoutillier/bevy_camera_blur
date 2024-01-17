@@ -39,7 +39,7 @@ struct PostProcessSettings {
 @group(0) @binding(2) var<uniform> settings: PostProcessSettings;
 
 @fragment
-fn fragment_x(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
+fn fragment_horizontal(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     let sigma = clamp(settings.sigma, 0.0, 15.0);
     if sigma < 0.01 {
         return textureSample(screen_texture, texture_sampler, in.uv);
@@ -64,7 +64,7 @@ fn fragment_x(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     return color / weight_sum;
 }
 @fragment
-fn fragment_y(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
+fn fragment_vertical(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     let sigma = clamp(settings.sigma, 0.0, 15.0);
     if sigma < 0.01 {
         return textureSample(screen_texture, texture_sampler, in.uv);
