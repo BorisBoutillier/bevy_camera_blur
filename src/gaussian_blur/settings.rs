@@ -22,3 +22,12 @@ pub struct GaussianBlurSettings {
     /// WebGL2 structs must be 16 byte aligned.
     pub _webgl2_padding: f32,
 }
+impl GaussianBlurSettings {
+    /// Gaussian blur setting that will not trigger any blur post-processing
+    pub const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings {
+        sigma: 0.0,
+        kernel_size: 1,
+        sample_rate_factor: 1.0,
+        _webgl2_padding: 0.,
+    };
+}
