@@ -1,7 +1,10 @@
 mod pipeline;
 mod settings;
+mod tweening;
 
 pub use settings::GaussianBlurSettings;
+#[cfg(feature = "bevy_tweening")]
+pub use tweening::*;
 
 use bevy::{
     core_pipeline::core_2d::{self, CORE_2D},
@@ -68,19 +71,3 @@ impl Plugin for GaussianBlurPlugin {
         render_app.init_resource::<GaussianBlurPipeline>();
     }
 }
-
-//use bevy_tweening::Lens;
-//pub struct GaussianBlurLens {
-//    pub start: GaussianBlurSettings,
-//    pub end: GaussianBlurSettings,
-//}
-//impl Lens<GaussianBlurSettings> for GaussianBlurLens {
-//    fn lerp(&mut self, target: &mut GaussianBlurSettings, ratio: f32) {
-//        target.sigma = self.start.sigma + (self.end.sigma - self.start.sigma) * ratio;
-//        target.kernel_size = (self.start.kernel_size as f32
-//            + (self.end.kernel_size as f32 - self.start.kernel_size as f32) * ratio)
-//            as u32;
-//        target.sample_rate_factor = self.start.sample_rate_factor
-//            + (self.end.sample_rate_factor - self.start.sample_rate_factor) * ratio;
-//    }
-//}

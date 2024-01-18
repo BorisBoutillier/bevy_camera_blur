@@ -10,12 +10,25 @@ categories = ["games","game-development"]
 keywords = ["bevy","blur"]
 readme = "README.md"
 
+[features]
+default = []
+# Enable support for Lens implementations for bevy_tweening
+bevy_tweening = [ "dep:bevy_tweening" ]
+
 [dependencies]
+bevy_tweening = {version = "0.9" , optional = true }
 
 [dependencies.bevy]
 version = "0.12"
 default-features = false
 features = ["bevy_core_pipeline" , "bevy_render"]
 
+[package.metadata.docs.rs]
+all-features = true
+
 [dev-dependencies]
 bevy = {version ="0.12" }
+
+[[example]]
+name = "gaussian_blur_animated"
+required-features = [ "bevy_tweening" ]
