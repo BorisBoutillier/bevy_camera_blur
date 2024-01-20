@@ -20,9 +20,7 @@ fn setup(
         Camera2dBundle::default(),
         GaussianBlurSettings {
             sigma: 10.,
-            kernel_size: 40,
-            sample_rate_factor: 1.,
-            _webgl2_padding: 0.,
+            ..default()
         },
     ));
     commands.spawn(MaterialMesh2dBundle {

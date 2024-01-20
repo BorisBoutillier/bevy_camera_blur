@@ -1,4 +1,4 @@
-use super::GaussianBlurSettings;
+use super::settings::GaussianBlurUniforms;
 use bevy::{
     core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
     ecs::query::QueryItem,
@@ -38,7 +38,7 @@ impl ViewNode for GaussianBlurNode {
     ) -> Result<(), NodeRunError> {
         let gaussian_blur_pipeline = world.resource::<GaussianBlurPipeline>();
         let pipeline_cache = world.resource::<PipelineCache>();
-        let settings_uniforms = world.resource::<ComponentUniforms<GaussianBlurSettings>>();
+        let settings_uniforms = world.resource::<ComponentUniforms<GaussianBlurUniforms>>();
 
         let (Some(settings_binding), Some(horizontal_pipeline), Some(vertical_pipeline)) = (
             settings_uniforms.binding(),
@@ -130,7 +130,7 @@ impl FromWorld for GaussianBlurPipeline {
             ty: BindingType::Buffer {
                 ty: bevy::render::render_resource::BufferBindingType::Uniform,
                 has_dynamic_offset: false,
-                min_binding_size: Some(GaussianBlurSettings::min_size()),
+                min_binding_size: Some(GaussianBlurUniforms::min_size()),
             },
             count: None,
         };

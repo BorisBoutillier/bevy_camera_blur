@@ -2,7 +2,7 @@ mod pipeline;
 mod settings;
 mod tweening;
 
-pub use settings::GaussianBlurSettings;
+pub use settings::{GaussianBlurSettings, KernelSize};
 #[cfg(feature = "bevy_tweening")]
 pub use tweening::*;
 
@@ -18,6 +18,8 @@ use bevy::{
 };
 use pipeline::*;
 
+use self::settings::GaussianBlurUniforms;
+
 /// Add support for Gaussian Blur post-processing effects
 pub struct GaussianBlurPlugin;
 
@@ -27,7 +29,7 @@ impl Plugin for GaussianBlurPlugin {
 
         app.add_plugins((
             ExtractComponentPlugin::<GaussianBlurSettings>::default(),
-            UniformComponentPlugin::<GaussianBlurSettings>::default(),
+            UniformComponentPlugin::<GaussianBlurUniforms>::default(),
         ));
 
         let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {

@@ -143,18 +143,13 @@ fn despawn_menu(mut commands: Commands, nodes: Query<Entity, With<Menu>>) {
 
 const BLUR: GaussianBlurSettings = GaussianBlurSettings {
     sigma: 10.0,
-    kernel_size: 40,
-    sample_rate_factor: 1.0,
-    _webgl2_padding: 0.,
+    kernel_size: KernelSize::Auto,
 };
 fn deblur(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
     let tween = Tween::new(
         EaseFunction::QuadraticInOut,
         Duration::from_millis(500),
-        GaussianBlurLens {
-            start: BLUR,
-            end: GaussianBlurSettings::NO_BLUR,
-        },
+        GaussianBlurLens::new(BLUR, GaussianBlurSettings::NO_BLUR),
     );
     let camera_entity = camera.single();
     commands.entity(camera_entity).insert(Animator::new(tween));
@@ -163,10 +158,7 @@ fn blur(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
     let tween = Tween::new(
         EaseFunction::QuadraticInOut,
         Duration::from_millis(500),
-        GaussianBlurLens {
-            start: GaussianBlurSettings::NO_BLUR,
-            end: BLUR,
-        },
+        GaussianBlurLens::new(GaussianBlurSettings::NO_BLUR, BLUR),
     );
     let camera_entity = camera.single();
     commands.entity(camera_entity).insert(Animator::new(tween));
