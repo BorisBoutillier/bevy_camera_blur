@@ -1,4 +1,5 @@
 use super::settings::GaussianBlurUniforms;
+use super::GAUSSIAN_BLUR_SHADER_HANDLE;
 use bevy::{
     core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
     ecs::query::QueryItem,
@@ -144,9 +145,6 @@ impl FromWorld for GaussianBlurPipeline {
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
         let sampler = render_device.create_sampler(&SamplerDescriptor::default());
 
-        // Get the shader handle
-        let shader = world.resource::<AssetServer>().load("gaussian_blur.wgsl");
-
         let horizontal_pipeline_id = world
             .resource_mut::<PipelineCache>()
             // This will add the pipeline to the cache and queue it's creation
@@ -156,7 +154,7 @@ impl FromWorld for GaussianBlurPipeline {
                 // This will setup a fullscreen triangle for the vertex state
                 vertex: fullscreen_shader_vertex_state(),
                 fragment: Some(FragmentState {
-                    shader: shader.clone(),
+                    shader: GAUSSIAN_BLUR_SHADER_HANDLE,
                     shader_defs: vec![],
                     // Make sure this matches the entry point of your shader.
                     // It can be anything as long as it matches here and in the shader.
@@ -183,7 +181,7 @@ impl FromWorld for GaussianBlurPipeline {
                 // This will setup a fullscreen triangle for the vertex state
                 vertex: fullscreen_shader_vertex_state(),
                 fragment: Some(FragmentState {
-                    shader,
+                    shader: GAUSSIAN_BLUR_SHADER_HANDLE,
                     shader_defs: vec![],
                     // Make sure this matches the entry point of your shader.
                     // It can be anything as long as it matches here and in the shader.
