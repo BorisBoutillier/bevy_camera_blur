@@ -3,28 +3,33 @@ use bevy_tweening::Lens;
 
 use crate::{GaussianBlurSettings, KernelSize};
 
-/// A bevy_tweening Lens implementation to allow animation of the gaussian blur.
+/// A `bevy_tweening` Lens implementation to allow animation of the gaussian blur.
 ///
 /// This will tweens the `sigma`, `kernel_size`, and `texel_step` attributes
-/// of the GaussianBlurSettings.
+/// of the [`GaussianBlurSettings`].
 /// # Example
 ///
-/// Implement `Lens` for a custom type:
+/// System that will create an animation from a no blur to a  10-sigma blur effect
 ///
-/// ```rust
-/// # use bevy::prelude::*;
-/// # use bevy_tweening::*;
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_tweening::*;
+///# use bevy_camera_blur::*;
+///# use std::time::Duration;
+///
 ///pub fn blur(
 ///    mut commands: Commands,
 ///    camera: Query<Entity, (With<Camera>, With<GaussianBlurSettings>)>,
 ///) {
 ///    let tween = Tween::new(
 ///        EaseFunction::QuadraticInOut,
-///        Duration::from_millis(BLUR_ANIMATION_DURATION),
-///        GaussianBlurLens {
-///            start: NO_BLUR,
-///            end: BLUR,
-///        },
+///        Duration::from_millis(500),
+///        GaussianBlurLens::new(
+///             GaussianBlurSettings::NO_BLUR,
+///             GaussianBlurSettings {
+///                 sigma: 10.0,
+///                 ..default()
+///        })
 ///    );
 ///    let camera_entity = camera.single();
 ///    commands.entity(camera_entity).insert(Animator::new(tween));
@@ -40,8 +45,8 @@ impl GaussianBlurLens {
     /// Creates a new Lens to tween between the provided 'start' and 'end' setting.
     pub fn new(start: GaussianBlurSettings, end: GaussianBlurSettings) -> Self {
         GaussianBlurLens {
-            start: start.make_concrete(),
-            end: end.make_concrete(),
+            start: start.create_concrete(),
+            end: end.create_concrete(),
         }
     }
 }

@@ -27,7 +27,7 @@ features = ["bevy_core_pipeline" , "bevy_render"]
 all-features = true
 
 [dev-dependencies]
-bevy = {version ="0.12" }
+bevy = "0.12"
 
 [[example]]
 name = "gaussian_blur_animated"

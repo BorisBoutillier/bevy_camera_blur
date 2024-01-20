@@ -1,0 +1,8 @@
+1. Run all test, this will include doc tests.
+    cargo test --all-features
+2. Manually run and check each example on linux
+    cargo run --all-features --example EXAMPLE
+3. Manually run and check each example on wasm
+    cargo run --all-features --release --target wasm32-unknown-unknown --example EXAMPLE
+4. Compile and manually review doc:
+    cargo doc --all-features --open

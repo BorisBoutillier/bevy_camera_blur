@@ -20,7 +20,12 @@ use pipeline::*;
 
 use self::settings::GaussianBlurUniforms;
 
-/// Add support for Gaussian Blur post-processing effects
+/// This plugins adds support for a gaussian blur post-processing effects to 2D or 3D cameras.
+///
+/// It must be used in conjonction with the  [`GaussianBlurSettings`] component that must be added to any 2D or 3D Camera entity.
+///
+/// See [`GaussianBlurSettings`] for more details and example.
+///
 pub struct GaussianBlurPlugin;
 
 impl Plugin for GaussianBlurPlugin {

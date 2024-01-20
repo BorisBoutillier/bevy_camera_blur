@@ -15,17 +15,35 @@ pub enum KernelSize {
 
 /// Applies a gaussian blur effect to a 2d or 3d camera.
 ///
-/// See also <https://en.wikipedia.org/wiki/Gaussian_blur>.
+/// See algorithm details: <https://en.wikipedia.org/wiki/Gaussian_blur>.
+///
+/// It must be added as a Component to a 2D or 3D Camera
+///
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_camera_blur::*;
+///
+///pub fn setup(mut commands: Commands) {
+///    commands.spawn((
+///        Camera2dBundle::default(),
+///        GaussianBlurSettings {
+///            sigma: 4.,
+///            ..default()
+///        },
+///    ));
+///}
+///```
 #[derive(Component, Reflect, Default, Clone, Copy, Debug)]
 #[reflect(Component, Default)]
 pub struct GaussianBlurSettings {
-    /// Standard deviation (spread) of the blur
-    /// It must be a positive number.
-    /// A value inferior to 0.1 will have no blurring, and skip the post-process computation,
+    /// Standard deviation (spread) of the blur.
+    /// - This value will be clamp to the range `[0.0,100.0]`
+    ///  - A value inferior to 0.1 will create no blurring.
     pub sigma: f32,
     /// Kernel size for the computation of the gaussian blur.
-    /// When set to `KernelSize::Auto` (default), the kernel_size will be computed as the first odd value higher than `4*sigma`.
-    /// When set to `KernelSize::Val(v)`, `v` must be an odd value.
+    /// - `KernelSize::Auto`: [default]. the kernel_size will be computed as the first odd value higher than `4*sigma`.
+    /// - `KernelSize::Val(v)`: The explicit size of the kernel.
+    ///     `v` will be clamped to the range `[1..401]` and must be odd. if not, it will be replaced by the first higher odd value.
     pub kernel_size: KernelSize,
 }
 impl GaussianBlurSettings {
@@ -34,25 +52,17 @@ impl GaussianBlurSettings {
         sigma: 0.0,
         kernel_size: KernelSize::Auto,
     };
-    /// Compute a new `GaussianBlurSettings` where the `kernel_size` is not `KernelSize::Auto`
+    /// Computes a new `GaussianBlurSettings` where each attribute is legal as expected by the shader.
     ///
-    /// When `Auto` the `kernel_size` is computed as the first odd value higher than 4*sigma.
-    pub fn make_concrete(&self) -> GaussianBlurSettings {
-        assert!(
-            self.sigma.is_sign_positive() && self.sigma.is_finite(),
-            "Invalid 'sigma' value [{}], it must be a positive and finite float value.",
-            self.sigma
-        );
-        assert!(match self.kernel_size {
-    KernelSize::Auto => true,
-    KernelSize::Val(v) => v%2==1,
-},"Invalid 'kernel_size' value [{:?}]. When set to KernelSize::Val(v), 'v' must be an odd number.",self.kernel_size);
-
+    /// It also replaces `KernelSize::Auto` by `KernelSize::Val(v)` where v is the first odd value higher than `4.*sigma`.
+    pub fn create_concrete(&self) -> GaussianBlurSettings {
+        let sigma = self.sigma.clamp(0.0, 100.0);
         let kernel_size = match self.kernel_size {
-            KernelSize::Auto => {
-                KernelSize::Val(GaussianBlurSettings::default_kernel_size(self.sigma))
+            KernelSize::Auto => KernelSize::Val(GaussianBlurSettings::default_kernel_size(sigma)),
+            KernelSize::Val(v) => {
+                let v = v.clamp(1, 401);
+                KernelSize::Val(if v % 2 == 1 { v } else { v + 1 })
             }
-            KernelSize::Val(_) => self.kernel_size,
         };
         GaussianBlurSettings {
             sigma: self.sigma,
@@ -60,11 +70,6 @@ impl GaussianBlurSettings {
         }
     }
     fn default_kernel_size(sigma: f32) -> u32 {
-        assert!(
-            sigma.is_sign_positive() && sigma.is_finite(),
-            "Invalid 'sigma' value [{}], it must be a positive and finite float value.",
-            sigma
-        );
         let v = (4. * sigma).ceil() as u32;
         if v % 2 == 0 {
             v + 1
@@ -81,20 +86,18 @@ impl ExtractComponent for GaussianBlurSettings {
     type Out = GaussianBlurUniforms;
 
     fn extract_component(settings: QueryItem<'_, Self::Query>) -> Option<Self::Out> {
+        let settings = settings.create_concrete();
         // FIXME:
         // Currently cannot filter out low sigma, as this trigger a fatal in bevy render/winit
-        // When used with animation, when frames go from Some() to None
+        // when used with animation, when frames go from Some() to None
         if settings.sigma <= 0.1 {
-            dbg!("None");
             None
         } else {
             //{
-            let settings = settings.make_concrete();
             let kernel_size = match settings.kernel_size {
                 KernelSize::Auto => panic!(),
                 KernelSize::Val(v) => v,
             };
-            dbg!(settings.sigma, kernel_size);
             Some(GaussianBlurUniforms {
                 sigma: settings.sigma,
                 kernel_size,
