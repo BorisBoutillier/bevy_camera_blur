@@ -9,6 +9,7 @@ homepage = "https://github.com/BorisBoutillier/bevy_camera_blur"
 categories = ["games","game-development"]
 keywords = ["bevy","blur"]
 readme = "README.md"
+autoexamples = false
 
 [features]
 default = []
@@ -28,6 +29,12 @@ all-features = true
 
 [dev-dependencies]
 bevy = "0.12"
+
+[[example]]
+name = "gaussian_blur_2d"
+
+[[example]]
+name = "gaussian_blur_3d"
 
 [[example]]
 name = "gaussian_blur_animated"

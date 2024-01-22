@@ -33,18 +33,29 @@ pub enum KernelSize {
 ///    ));
 ///}
 ///```
-#[derive(Component, Reflect, Default, Clone, Copy, Debug)]
+#[derive(Component, Reflect, Clone, Copy, Debug)]
 #[reflect(Component, Default)]
 pub struct GaussianBlurSettings {
     /// Standard deviation (spread) of the blur.
     /// - This value will be clamp to the range `[0.0,100.0]`
-    ///  - A value inferior to 0.1 will create no blurring.
+    ///  - A value inferior to 0.1 will create no blurring
+    ///  - Defaults to 10.0
     pub sigma: f32,
-    /// Kernel size for the computation of the gaussian blur.
-    /// - `KernelSize::Auto`: [default]. the kernel_size will be computed as the first odd value higher than `4*sigma`.
-    /// - `KernelSize::Val(v)`: The explicit size of the kernel.
-    ///     `v` will be clamped to the range `[1..401]` and must be odd. if not, it will be replaced by the first higher odd value.
+    /// Kernel size for the computation of the gaussian blur
+    /// - `KernelSize::Auto`: [default]. the kernel_size will be computed as the first odd value higher than `4*sigma`
+    /// - `KernelSize::Val(v)`: The explicit size of the kernel
+    ///     `v` will be clamped to the range `[1..401]` and must be odd. if not, it will be replaced by the first higher odd value
+    ///
+    /// The computational cost of the gaussian blur post-processing effect is 2*kernel_size texture sampling per pixels.
     pub kernel_size: KernelSize,
+}
+impl Default for GaussianBlurSettings {
+    fn default() -> Self {
+        Self {
+            sigma: 10.0,
+            kernel_size: KernelSize::Auto,
+        }
+    }
 }
 impl GaussianBlurSettings {
     /// Gaussian blur setting that will not trigger any blur post-processing
