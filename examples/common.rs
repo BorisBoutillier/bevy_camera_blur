@@ -63,7 +63,6 @@ pub fn update_gaussian_blur_settings(
                 };
             }
             if keycode.just_pressed(KeyCode::Space) {
-                // FIXME: Removing GaussianBlurSettings core dumps
                 commands.entity(entity).remove::<GaussianBlurSettings>();
             }
         }
