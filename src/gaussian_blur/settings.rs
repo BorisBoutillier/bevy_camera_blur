@@ -98,13 +98,9 @@ impl ExtractComponent for GaussianBlurSettings {
 
     fn extract_component(settings: QueryItem<'_, Self::Query>) -> Option<Self::Out> {
         let settings = settings.create_concrete();
-        // FIXME:
-        // Currently cannot filter out low sigma, as this trigger a fatal in bevy render/winit
-        // when used with animation, when frames go from Some() to None
-        //if settings.sigma <= 0.1 {
-        //    None
-        //} else {
-        {
+        if settings.sigma <= 0.1 {
+            None
+        } else {
             let kernel_size = match settings.kernel_size {
                 KernelSize::Auto => panic!(),
                 KernelSize::Val(v) => v,

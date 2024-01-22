@@ -29,12 +29,16 @@ impl GaussianBlurNode {
 
 // The ViewNode trait is required by the ViewNodeRunner
 impl ViewNode for GaussianBlurNode {
-    type ViewQuery = &'static ViewTarget;
+    type ViewQuery = (
+        &'static ViewTarget,
+        // This make sure the node is only run on cameras with an extracted GaussianBlurUniform component
+        &'static GaussianBlurUniforms,
+    );
     fn run(
         &self,
         _graph: &mut RenderGraphContext,
         render_context: &mut RenderContext,
-        view_target: QueryItem<Self::ViewQuery>,
+        (view_target, _gaussian_blur_uniforms): QueryItem<Self::ViewQuery>,
         world: &World,
     ) -> Result<(), NodeRunError> {
         let gaussian_blur_pipeline = world.resource::<GaussianBlurPipeline>();
@@ -42,7 +46,7 @@ impl ViewNode for GaussianBlurNode {
         let settings_uniforms = world.resource::<ComponentUniforms<GaussianBlurUniforms>>();
 
         let (Some(settings_binding), Some(horizontal_pipeline), Some(vertical_pipeline)) = (
-            settings_uniforms.binding(),
+            settings_uniforms.uniforms().binding(),
             pipeline_cache.get_render_pipeline(gaussian_blur_pipeline.horizontal_pipeline_id),
             pipeline_cache.get_render_pipeline(gaussian_blur_pipeline.vertical_pipeline_id),
         ) else {
