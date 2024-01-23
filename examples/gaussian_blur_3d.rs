@@ -5,9 +5,7 @@ use bevy_camera_blur::*;
 
 mod common;
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
-        .add_plugins(GaussianBlurPlugin)
+    common::common_app()
         .add_systems(Startup, setup)
         .add_systems(Startup, common::setup_gaussian_blur_settings_ui)
         .add_systems(Update, common::update_gaussian_blur_settings)
