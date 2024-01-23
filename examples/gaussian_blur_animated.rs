@@ -6,17 +6,16 @@ use bevy::prelude::*;
 use bevy_camera_blur::*;
 use bevy_tweening::*;
 
+mod common;
+
 fn main() {
-    App::new()
-        .add_plugins(DefaultPlugins)
+    common::common_app()
         .add_plugins(TweeningPlugin)
-        .add_plugins(GaussianBlurPlugin)
-        .add_systems(Startup, (setup, setup_ui))
         .add_state::<GameState>()
+        .add_systems(Startup, (setup, setup_ui))
         .add_systems(Update, component_animator_system::<GaussianBlurSettings>)
-        .add_systems(Update, game_interaction.run_if(in_state(GameState::Game)))
+        .add_systems(Update, gamestate_interaction)
         .add_systems(OnEnter(GameState::Menu), (spawn_menu, blur))
-        .add_systems(Update, menu_interaction.run_if(in_state(GameState::Menu)))
         .add_systems(OnExit(GameState::Menu), (despawn_menu, deblur))
         .run();
 }
@@ -64,38 +63,25 @@ fn setup(
     ));
 }
 
-fn game_interaction(
+fn gamestate_interaction(
+    state: Res<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
     input: Res<Input<KeyCode>>,
-    mouse_input: Res<Input<MouseButton>>,
 ) {
-    if input.any_just_pressed([KeyCode::Escape, KeyCode::Space, KeyCode::Return])
-        || mouse_input.just_pressed(MouseButton::Left)
-    {
-        next_state.set(GameState::Menu);
+    if input.just_pressed(KeyCode::Space) {
+        next_state.set(match state.get() {
+            GameState::Menu => GameState::Game,
+            GameState::Game => GameState::Menu,
+        })
     }
 }
 
 #[derive(Component)]
 struct Menu;
 
-fn menu_interaction(
-    mut next_state: ResMut<NextState<GameState>>,
-    input: Res<Input<KeyCode>>,
-    interactions: Query<&Interaction, Changed<Interaction>>,
-) {
-    if input.any_just_pressed([KeyCode::Escape, KeyCode::Space, KeyCode::Return]) {
-        next_state.set(GameState::Game);
-    }
-    for interaction in interactions.iter() {
-        if *interaction == Interaction::Pressed {
-            next_state.set(GameState::Game);
-        }
-    }
-}
 fn setup_ui(mut commands: Commands) {
     commands.spawn((TextBundle::from_section(
-        "(Space/Enter/Escape/Mouse Click) Toggle GameState",
+        "(Space) Toggle GameState",
         TextStyle {
             font_size: 18.0,
             color: Color::WHITE,
@@ -142,7 +128,7 @@ fn spawn_menu(mut commands: Commands) {
                 })
                 .with_children(|parent| {
                     parent.spawn(TextBundle::from_section(
-                        "Continue",
+                        "Menu",
                         TextStyle {
                             font_size: 16.0,
                             color: Color::ANTIQUE_WHITE,
