@@ -1,5 +1,3 @@
-//! A simple 3D scene with light shining over a cube sitting on a plane.
-
 use std::time::Duration;
 
 use bevy::prelude::*;
@@ -12,7 +10,7 @@ fn main() {
     common::common_app()
         .add_plugins(TweeningPlugin)
         .add_state::<GameState>()
-        .add_systems(Startup, (setup, setup_ui))
+        .add_systems(Startup, (common::setup_3d_scene, setup_camera, setup_ui))
         .add_systems(Update, component_animator_system::<GaussianBlurSettings>)
         .add_systems(Update, gamestate_interaction)
         .add_systems(OnEnter(GameState::Menu), (spawn_menu, blur))
@@ -26,34 +24,7 @@ enum GameState {
     Menu,
     Game,
 }
-/// set up a simple 3D scene
-fn setup(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
-    // Spawn a simple 3D scene
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(5.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
-        ..default()
-    });
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
-        transform: Transform::from_xyz(0.0, 0.5, 0.0),
-        ..default()
-    });
-    commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            intensity: 1500.0,
-            shadows_enabled: true,
-            ..default()
-        },
-        transform: Transform::from_xyz(4.0, 8.0, 4.0),
-        ..default()
-    });
-    // Spawn a 3D camera
+fn setup_camera(mut commands: Commands) {
     commands.spawn((
         Camera3dBundle {
             transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
