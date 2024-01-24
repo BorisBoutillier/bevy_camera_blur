@@ -2,7 +2,7 @@
 
 [![MIT/Apache 2.0](https://img.shields.io/badge/license-MIT%2FApache-blue.svg)](https://github.com/Jondolf/bevy_xpbd#license)
 
-This crate provides Bevy plugins to add post-processing blurring effects to a 2D or 3D camera.
+This crate provides Bevy plugins to add fullscreen post-processing blurring effects to a 2D or 3D camera.
 
 ## Algorithms
 
@@ -11,6 +11,7 @@ Here are the currently supporting algorithm and their associated plugin:
 | algorithm | Plugin |
 |-----------| ------ |
 | Gaussian Blur | `GaussianBlurPlugin` |
+| Box Blur | `BoxBlurPlugin` |
 
 ## Examples
 

@@ -39,3 +39,13 @@ name = "gaussian_blur_3d"
 [[example]]
 name = "gaussian_blur_animated"
 required-features = [ "bevy_tweening" ]
+
+[[example]]
+name = "box_blur_2d"
+
+[[example]]
+name = "box_blur_3d"
+
+[[example]]
+name = "box_blur_animated"
+required-features = [ "bevy_tweening" ]

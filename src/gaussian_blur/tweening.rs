@@ -26,10 +26,8 @@ use crate::{GaussianBlurSettings, KernelSize};
 ///        Duration::from_millis(500),
 ///        GaussianBlurLens::new(
 ///             GaussianBlurSettings::NO_BLUR,
-///             GaussianBlurSettings {
-///                 sigma: 10.0,
-///                 ..default()
-///        })
+///             GaussianBlurSettings::default(),
+///        )
 ///    );
 ///    let camera_entity = camera.single();
 ///    commands.entity(camera_entity).insert(Animator::new(tween));

@@ -8,10 +8,10 @@ mod common;
 
 fn main() {
     common::common_app()
-        .add_plugins((GaussianBlurPlugin, TweeningPlugin))
+        .add_plugins((BoxBlurPlugin, TweeningPlugin))
         .add_state::<GameState>()
         .add_systems(Startup, (common::setup_3d_scene, setup_camera, setup_ui))
-        .add_systems(Update, component_animator_system::<GaussianBlurSettings>)
+        .add_systems(Update, component_animator_system::<BoxBlurSettings>)
         .add_systems(Update, gamestate_interaction)
         .add_systems(OnEnter(GameState::Menu), (spawn_menu, blur))
         .add_systems(OnExit(GameState::Menu), (despawn_menu, deblur))
@@ -30,7 +30,7 @@ fn setup_camera(mut commands: Commands) {
             transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
             ..default()
         },
-        GaussianBlurSettings::NO_BLUR,
+        BoxBlurSettings::NO_BLUR,
     ));
 }
 
@@ -119,10 +119,7 @@ fn deblur(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
     let tween = Tween::new(
         EaseFunction::QuadraticInOut,
         Duration::from_millis(500),
-        GaussianBlurLens::new(
-            GaussianBlurSettings::default(),
-            GaussianBlurSettings::NO_BLUR,
-        ),
+        BoxBlurLens::new(BoxBlurSettings::default(), BoxBlurSettings::NO_BLUR),
     );
     let camera_entity = camera.single();
     commands.entity(camera_entity).insert(Animator::new(tween));
@@ -131,10 +128,7 @@ fn blur(mut commands: Commands, camera: Query<Entity, With<Camera>>) {
     let tween = Tween::new(
         EaseFunction::QuadraticInOut,
         Duration::from_millis(500),
-        GaussianBlurLens::new(
-            GaussianBlurSettings::NO_BLUR,
-            GaussianBlurSettings::default(),
-        ),
+        BoxBlurLens::new(BoxBlurSettings::NO_BLUR, BoxBlurSettings::default()),
     );
     let camera_entity = camera.single();
     commands.entity(camera_entity).insert(Animator::new(tween));

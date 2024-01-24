@@ -1,7 +1,7 @@
 #![forbid(missing_docs)]
 #![forbid(unsafe_code)]
 #![warn(clippy::doc_markdown)]
-//! This crate provides Bevy plugins to add post-processing blurring effects
+//! This crate provides Bevy plugins to add fullscreen post-processing blurring effects
 //! to a 2D or 3D camera.
 //!
 //! # Algorithms
@@ -11,6 +11,7 @@
 //! | algorithm | Plugin |
 //! |-----------| ------ |
 //! | Gaussian Blur | [`GaussianBlurPlugin`] |
+//! | Box Blur | [`BoxBlurPlugin`] |
 //!
 //! # Features flags
 //!
@@ -21,3 +22,5 @@
 //!
 mod gaussian_blur;
 pub use gaussian_blur::*;
+mod box_blur;
+pub use box_blur::*;

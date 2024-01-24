@@ -4,7 +4,7 @@ mod common;
 
 fn main() {
     common::common_app()
-        .add_plugins(GaussianBlurPlugin)
+        .add_plugins(BoxBlurPlugin)
         .add_systems(
             Startup,
             (
@@ -13,10 +13,10 @@ fn main() {
                 common::setup_blur_settings_ui,
             ),
         )
-        .add_systems(Update, common::update_gaussian_blur_settings)
+        .add_systems(Update, common::update_box_blur_settings)
         .run();
 }
 
 fn setup_camera(mut commands: Commands) {
-    commands.spawn((Camera2dBundle::default(), GaussianBlurSettings::default()));
+    commands.spawn((Camera2dBundle::default(), BoxBlurSettings::default()));
 }
