@@ -20,7 +20,7 @@ bevy_tweening = [ "dep:bevy_tweening" ]
 bevy_tweening = {version = "0.9" , optional = true }
 
 [dependencies.bevy]
-version = "0.12"
+git = "https://github.com/bevyengine/bevy"
 default-features = false
 features = ["bevy_core_pipeline" , "bevy_render"]
 
@@ -28,7 +28,7 @@ features = ["bevy_core_pipeline" , "bevy_render"]
 all-features = true
 
 [dev-dependencies]
-bevy = "0.12"
+bevy = { git = "https://github.com/bevyengine/bevy"}
 
 [[example]]
 name = "gaussian_blur_2d"

@@ -8,12 +8,13 @@ use bevy::{
         extract_component::ComponentUniforms,
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
-            BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, ColorTargetState, ColorWrites, FragmentState,
-            MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
-            RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-            SamplerDescriptor, ShaderStages, ShaderType, TextureFormat, TextureSampleType,
-            TextureViewDimension,
+            binding_types::{sampler, texture_2d, uniform_buffer},
+            BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntries,
+            BindGroupLayoutEntry, BindingType, CachedRenderPipelineId, ColorTargetState,
+            ColorWrites, FragmentState, MultisampleState, Operations, PipelineCache,
+            PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
+            RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+            ShaderType, TextureFormat, TextureSampleType, TextureViewDimension,
         },
         renderer::{RenderContext, RenderDevice},
         texture::BevyDefault,
@@ -84,6 +85,8 @@ impl ViewNode for GaussianBlurNode {
                     ops: Operations::default(),
                 })],
                 depth_stencil_attachment: None,
+                timestamp_writes: None,
+                occlusion_query_set: None,
             });
 
             render_pass.set_render_pipeline(pipeline);
@@ -109,42 +112,18 @@ impl FromWorld for GaussianBlurPipeline {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
 
-        // Input texture binding
-        let texture = BindGroupLayoutEntry {
-            binding: 0,
-            ty: BindingType::Texture {
-                sample_type: TextureSampleType::Float { filterable: true },
-                view_dimension: TextureViewDimension::D2,
-                multisampled: false,
-            },
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-
-        // Sampler binding
-        let sampler = BindGroupLayoutEntry {
-            binding: 1,
-            ty: BindingType::Sampler(SamplerBindingType::Filtering),
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-        // Settings
-        let settings = BindGroupLayoutEntry {
-            binding: 2,
-            visibility: ShaderStages::FRAGMENT,
-            ty: BindingType::Buffer {
-                ty: bevy::render::render_resource::BufferBindingType::Uniform,
-                has_dynamic_offset: false,
-                min_binding_size: Some(GaussianBlurUniforms::min_size()),
-            },
-            count: None,
-        };
-
         // Bind group layout
-        let layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-            label: Some("gaussian_blur_bind_group_layout"),
-            entries: &[texture, sampler, settings],
-        });
+        let layout = render_device.create_bind_group_layout(
+            "gaussian_blur_bind_group_layout",
+            &BindGroupLayoutEntries::sequential(
+                ShaderStages::FRAGMENT,
+                (
+                    texture_2d(TextureSampleType::Float { filterable: true }),
+                    sampler(SamplerBindingType::Filtering),
+                    uniform_buffer::<GaussianBlurUniforms>(false),
+                ),
+            ),
+        );
 
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
         let sampler = render_device.create_sampler(&SamplerDescriptor::default());

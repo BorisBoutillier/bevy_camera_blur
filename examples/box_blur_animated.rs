@@ -9,7 +9,7 @@ mod common;
 fn main() {
     common::common_app()
         .add_plugins((BoxBlurPlugin, TweeningPlugin))
-        .add_state::<GameState>()
+        .init_state::<GameState>()
         .add_systems(Startup, (common::setup_3d_scene, setup_camera, setup_ui))
         .add_systems(Update, component_animator_system::<BoxBlurSettings>)
         .add_systems(Update, gamestate_interaction)
@@ -37,7 +37,7 @@ fn setup_camera(mut commands: Commands) {
 fn gamestate_interaction(
     state: Res<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
 ) {
     if input.just_pressed(KeyCode::Space) {
         next_state.set(match state.get() {

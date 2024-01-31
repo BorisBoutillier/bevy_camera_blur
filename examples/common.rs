@@ -12,7 +12,6 @@ pub fn common_app() -> App {
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         primary_window: Some(Window {
             present_mode: PresentMode::AutoNoVsync,
-            fit_canvas_to_parent: true,
             ..default()
         }),
         ..default()
@@ -52,7 +51,7 @@ pub fn update_fps_ui(
 ) {
     let mut text = query.single_mut();
 
-    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+    if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
         if let Some(sma) = fps.smoothed() {
             text.sections[0].value = format!("FPS: {sma:3.1}");
         }
@@ -79,13 +78,13 @@ pub fn setup_3d_scene(
 ) {
     // Spawn a simple 3D scene
     commands.spawn(PbrBundle {
-        mesh: meshes.add(shape::Plane::from_size(5.0).into()),
-        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+        mesh: meshes.add(shape::Plane::from_size(5.0)),
+        material: materials.add(Color::rgb(0.3, 0.5, 0.3)),
         ..default()
     });
     commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-        material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+        material: materials.add(Color::rgb(0.8, 0.7, 0.6)),
         transform: Transform::from_xyz(0.0, 0.5, 0.0),
         ..default()
     });
@@ -126,7 +125,7 @@ pub fn update_gaussian_blur_settings(
     mut camera: Query<(Entity, Option<&mut GaussianBlurSettings>), With<Camera>>,
     mut text: Query<&mut Text, With<BlurUiText>>,
     mut commands: Commands,
-    keycode: Res<Input<KeyCode>>,
+    keycode: Res<ButtonInput<KeyCode>>,
 ) {
     let settings = camera.single_mut();
     let mut text = text.single_mut();
@@ -138,22 +137,22 @@ pub fn update_gaussian_blur_settings(
             text.push_str(&format!("(Q/A) Sigma: {}\n", settings.sigma));
             text.push_str(&format!("(W/S) Kernel size: {:?}\n", settings.kernel_size));
 
-            if keycode.just_pressed(KeyCode::A) {
+            if keycode.just_pressed(KeyCode::KeyA) {
                 settings.sigma -= 1.;
             }
-            if keycode.just_pressed(KeyCode::Q) {
+            if keycode.just_pressed(KeyCode::KeyQ) {
                 settings.sigma += 1.;
             }
             settings.sigma = settings.sigma.clamp(0.0, 100.0);
 
-            if keycode.just_pressed(KeyCode::S) {
+            if keycode.just_pressed(KeyCode::KeyS) {
                 settings.kernel_size = match settings.kernel_size {
                     KernelSize::Auto => KernelSize::Auto,
                     KernelSize::Val(1) => KernelSize::Auto,
                     KernelSize::Val(v) => KernelSize::Val((v - 2).clamp(1, 401)),
                 };
             }
-            if keycode.just_pressed(KeyCode::W) {
+            if keycode.just_pressed(KeyCode::KeyW) {
                 settings.kernel_size = match settings.kernel_size {
                     KernelSize::Auto => KernelSize::Val(1),
                     KernelSize::Val(v) => KernelSize::Val((v + 2).clamp(1, 401)),
@@ -180,7 +179,7 @@ pub fn update_box_blur_settings(
     mut camera: Query<(Entity, Option<&mut BoxBlurSettings>), With<Camera>>,
     mut text: Query<&mut Text, With<BlurUiText>>,
     mut commands: Commands,
-    keycode: Res<Input<KeyCode>>,
+    keycode: Res<ButtonInput<KeyCode>>,
 ) {
     let settings = camera.single_mut();
     let mut text = text.single_mut();
@@ -192,18 +191,18 @@ pub fn update_box_blur_settings(
             text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
             text.push_str(&format!("(W/S) N passes: {:?}\n", settings.n_passes));
 
-            if keycode.just_pressed(KeyCode::A) {
+            if keycode.just_pressed(KeyCode::KeyA) {
                 settings.kernel_size = settings.kernel_size.saturating_sub(2);
             }
-            if keycode.just_pressed(KeyCode::Q) {
+            if keycode.just_pressed(KeyCode::KeyQ) {
                 settings.kernel_size += 2;
             }
             settings.kernel_size = settings.kernel_size.clamp(1, 401);
 
-            if keycode.just_pressed(KeyCode::S) {
+            if keycode.just_pressed(KeyCode::KeyS) {
                 settings.n_passes -= 1;
             }
-            if keycode.just_pressed(KeyCode::W) {
+            if keycode.just_pressed(KeyCode::KeyW) {
                 settings.n_passes += 1;
             }
             settings.n_passes = settings.n_passes.clamp(1, 5);
@@ -227,7 +226,7 @@ pub fn update_kawase_blur_settings(
     mut camera: Query<(Entity, Option<&mut KawaseBlurSettings>), With<Camera>>,
     mut text: Query<&mut Text, With<BlurUiText>>,
     mut commands: Commands,
-    keycode: Res<Input<KeyCode>>,
+    keycode: Res<ButtonInput<KeyCode>>,
 ) {
     let settings = camera.single_mut();
     let mut text = text.single_mut();

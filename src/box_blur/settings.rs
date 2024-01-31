@@ -65,12 +65,12 @@ impl BoxBlurSettings {
 }
 
 impl ExtractComponent for BoxBlurSettings {
-    type Query = &'static Self;
+    type QueryData = &'static Self;
 
-    type Filter = ();
+    type QueryFilter = ();
     type Out = BoxBlurUniforms;
 
-    fn extract_component(settings: QueryItem<'_, Self::Query>) -> Option<Self::Out> {
+    fn extract_component(settings: QueryItem<'_, Self::QueryData>) -> Option<Self::Out> {
         let settings = settings.create_concrete();
         if settings.kernel_size == 1 {
             None
