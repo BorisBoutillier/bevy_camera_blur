@@ -222,3 +222,33 @@ pub fn update_box_blur_settings(
         }
     }
 }
+
+pub fn update_kawase_blur_settings(
+    mut camera: Query<(Entity, Option<&mut KawaseBlurSettings>), With<Camera>>,
+    mut text: Query<&mut Text, With<BlurUiText>>,
+    mut commands: Commands,
+    keycode: Res<Input<KeyCode>>,
+) {
+    let settings = camera.single_mut();
+    let mut text = text.single_mut();
+    let text = &mut text.sections[0].value;
+
+    match settings {
+        (entity, Some(mut settings)) => {
+            *text = "KawaseBlurSettings (Toggle: Space)\n".to_string();
+            if keycode.just_pressed(KeyCode::Space) {
+                commands.entity(entity).remove::<KawaseBlurSettings>();
+            }
+        }
+
+        (entity, None) => {
+            *text = "KawaseBlurSettings: Off (Toggle: Space)".to_string();
+
+            if keycode.just_pressed(KeyCode::Space) {
+                commands
+                    .entity(entity)
+                    .insert(KawaseBlurSettings::default());
+            }
+        }
+    }
+}

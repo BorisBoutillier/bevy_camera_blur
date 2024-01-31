@@ -49,3 +49,9 @@ name = "box_blur_3d"
 [[example]]
 name = "box_blur_animated"
 required-features = [ "bevy_tweening" ]
+
+[[example]]
+name = "kawase_blur_2d"
+
+[[example]]
+name = "kawase_blur_3d"
