@@ -252,3 +252,31 @@ pub fn update_kawase_blur_settings(
         }
     }
 }
+
+pub fn update_dual_blur_settings(
+    mut camera: Query<(Entity, Option<&mut DualBlurSettings>), With<Camera>>,
+    mut text: Query<&mut Text, With<BlurUiText>>,
+    mut commands: Commands,
+    keycode: Res<Input<KeyCode>>,
+) {
+    let settings = camera.single_mut();
+    let mut text = text.single_mut();
+    let text = &mut text.sections[0].value;
+
+    match settings {
+        (entity, Some(mut settings)) => {
+            *text = "DualBlurSettings (Toggle: Space)\n".to_string();
+            if keycode.just_pressed(KeyCode::Space) {
+                commands.entity(entity).remove::<DualBlurSettings>();
+            }
+        }
+
+        (entity, None) => {
+            *text = "DualBlurSettings: Off (Toggle: Space)".to_string();
+
+            if keycode.just_pressed(KeyCode::Space) {
+                commands.entity(entity).insert(DualBlurSettings::default());
+            }
+        }
+    }
+}

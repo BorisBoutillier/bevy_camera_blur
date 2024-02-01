@@ -4,13 +4,13 @@
 
 #import bevy_core_pipeline::fullscreen_vertex_shader::FullscreenVertexOutput
 
-const TWO_PI:f32 = 6.28312;
+const SQ_TWO_PI:f32 = 2.5066282;
 const E:f32 = 2.71828;
 
 // Compute the the gaussian weight of the value 'v' given the 'sigma'.
 fn gaussian_weight(v: i32, sigma: f32) -> f32 {
     let sigma_square = sigma * sigma;
-    return (1.0 / sqrt(TWO_PI * sigma_square)) * pow(E, -f32(v * v) / (2.0 * sigma_square));
+    return (1.0 / (SQ_TWO_PI * sigma)) * pow(E, -f32(v * v) / (2.0 * sigma_square));
 }
 
 @group(0) @binding(0) var screen_texture: texture_2d<f32>;

@@ -55,3 +55,9 @@ name = "kawase_blur_2d"
 
 [[example]]
 name = "kawase_blur_3d"
+
+[[example]]
+name = "dual_blur_2d"
+
+[[example]]
+name = "dual_blur_3d"

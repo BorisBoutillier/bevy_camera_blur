@@ -13,6 +13,7 @@
 //! | Gaussian Blur | [`GaussianBlurPlugin`] |
 //! | Box Blur | [`BoxBlurPlugin`] |
 //! | Kawase Blur | [`KawaseBlurPlugin`] |
+//! | Dual Blur | [`DualBlurPlugin`] |
 //!
 //! # Features flags
 //!
@@ -27,3 +28,5 @@ mod box_blur;
 pub use box_blur::*;
 mod kawase_blur;
 pub use kawase_blur::*;
+mod dual_blur;
+pub use dual_blur::*;
