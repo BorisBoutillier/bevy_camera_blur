@@ -1,6 +1,6 @@
 use bevy::ecs::query::QueryItem;
 use bevy::prelude::*;
-use bevy::render::{extract_component::ExtractComponent, render_resource::ShaderType};
+use bevy::render::extract_component::ExtractComponent;
 
 /// Applies a dual blur effect to a 2d or 3d camera.
 ///

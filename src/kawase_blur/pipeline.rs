@@ -1,6 +1,5 @@
 use super::settings::{KawaseBlurSettings, KawaseBlurUniforms};
 use super::KAWASE_BLUR_SHADER_HANDLE;
-use bevy::render;
 use bevy::render::render_resource::UniformBuffer;
 use bevy::render::renderer::RenderQueue;
 use bevy::{
@@ -8,7 +7,6 @@ use bevy::{
     ecs::query::QueryItem,
     prelude::*,
     render::{
-        extract_component::ComponentUniforms,
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
             BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,

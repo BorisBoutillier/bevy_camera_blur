@@ -1,7 +1,7 @@
 #![cfg(feature = "bevy_tweening")]
 use bevy_tweening::Lens;
 
-use crate::{GaussianBlurSettings, KernelSize};
+use crate::GaussianBlurSettings;
 
 /// A `bevy_tweening` Lens implementation to allow animation of the gaussian blur.
 ///
@@ -50,17 +50,15 @@ impl GaussianBlurLens {
 }
 impl Lens<GaussianBlurSettings> for GaussianBlurLens {
     fn lerp(&mut self, target: &mut GaussianBlurSettings, ratio: f32) {
-        target.sigma = self.start.sigma + (self.end.sigma - self.start.sigma) * ratio;
-        target.kernel_size = match (self.start.kernel_size, self.end.kernel_size) {
-            (KernelSize::Val(v1), KernelSize::Val(v2)) => {
-                let v = (v1 as f32 + (v2 as f32 - v1 as f32) * ratio) as u32;
-                if v % 2 == 0 {
-                    KernelSize::Val(v + 1)
-                } else {
-                    KernelSize::Val(v)
-                }
+        let v1 = self.start.kernel_size as f32;
+        let v2 = self.end.kernel_size as f32;
+        target.kernel_size = {
+            let v = (v1 + (v2 - v1) * ratio) as u32;
+            if v % 2 == 0 {
+                v + 1
+            } else {
+                v
             }
-            _ => panic!("kernel_size are expected to be both Val(x)"),
         };
     }
 }

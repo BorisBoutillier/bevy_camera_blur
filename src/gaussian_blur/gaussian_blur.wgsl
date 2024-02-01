@@ -16,8 +16,8 @@ fn gaussian_weight(v: i32, sigma: f32) -> f32 {
 @group(0) @binding(0) var screen_texture: texture_2d<f32>;
 @group(0) @binding(1) var texture_sampler: sampler;
 struct GaussianBlurUniforms {
-    sigma: f32,
     kernel_size: i32,
+    sigma: f32,
     // WebGL2 structs must be 16 byte aligned.
     _webgl2_padding: vec2<f32>,
 }
@@ -25,9 +25,6 @@ struct GaussianBlurUniforms {
 
 @fragment
 fn fragment_horizontal(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
-    if settings.sigma < 0.1 {
-        return textureSample(screen_texture, texture_sampler, in.uv);
-    }
     let upper = (settings.kernel_size - 1) / 2;
     let lower = -upper;
     var color = vec4(0.0);
@@ -44,9 +41,6 @@ fn fragment_horizontal(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
 }
 @fragment
 fn fragment_vertical(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
-    if settings.sigma < 0.1 {
-        return textureSample(screen_texture, texture_sampler, in.uv);
-    }
     let upper = (settings.kernel_size - 1) / 2;
     let lower = -upper;
     var color = vec4(0.0);

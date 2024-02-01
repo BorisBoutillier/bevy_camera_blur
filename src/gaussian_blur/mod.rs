@@ -2,7 +2,7 @@ mod pipeline;
 mod settings;
 mod tweening;
 
-pub use settings::{GaussianBlurSettings, KernelSize};
+pub use settings::GaussianBlurSettings;
 #[cfg(feature = "bevy_tweening")]
 pub use tweening::*;
 

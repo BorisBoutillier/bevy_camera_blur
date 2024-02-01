@@ -1,7 +1,4 @@
-use super::settings::DualBlurSettings;
 use super::{DualBlurTexture, DUAL_BLUR_SHADER_HANDLE};
-use bevy::render;
-use bevy::render::renderer::RenderQueue;
 use bevy::{
     core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
     ecs::query::QueryItem,
@@ -13,7 +10,7 @@ use bevy::{
             BindingType, CachedRenderPipelineId, ColorTargetState, ColorWrites, FragmentState,
             MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
             RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-            SamplerDescriptor, ShaderStages, ShaderType, TextureFormat, TextureSampleType,
+            SamplerDescriptor, ShaderStages, TextureFormat, TextureSampleType,
             TextureViewDimension,
         },
         renderer::{RenderContext, RenderDevice},

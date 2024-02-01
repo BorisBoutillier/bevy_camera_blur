@@ -9,14 +9,12 @@ use bevy::{
     core_pipeline::core_3d::{self, CORE_3D},
     prelude::*,
     render::{
-        extract_component::{ExtractComponentPlugin, UniformComponentPlugin},
+        extract_component::ExtractComponentPlugin,
         render_graph::{RenderGraphApp, ViewNodeRunner},
         RenderApp,
     },
 };
 use pipeline::*;
-
-use self::settings::KawaseBlurUniforms;
 
 const KAWASE_BLUR_SHADER_HANDLE: Handle<Shader> =
     Handle::weak_from_u128(0x25a6854386ee40c28864d2e724268b7a);

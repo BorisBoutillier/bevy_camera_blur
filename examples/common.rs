@@ -1,4 +1,6 @@
-/// functions used by multiple examples
+#![allow(dead_code)]
+/// Set of functions that are used by multiple examples
+///
 use bevy::{
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
     prelude::*,
@@ -135,29 +137,13 @@ pub fn update_gaussian_blur_settings(
     match settings {
         (entity, Some(mut settings)) => {
             *text = "GaussianBlurSettings (Toggle: Space)\n".to_string();
-            text.push_str(&format!("(Q/A) Sigma: {}\n", settings.sigma));
-            text.push_str(&format!("(W/S) Kernel size: {:?}\n", settings.kernel_size));
+            text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
 
             if keycode.just_pressed(KeyCode::A) {
-                settings.sigma -= 1.;
+                settings.kernel_size = settings.kernel_size.saturating_sub(2).clamp(1, 401);
             }
             if keycode.just_pressed(KeyCode::Q) {
-                settings.sigma += 1.;
-            }
-            settings.sigma = settings.sigma.clamp(0.0, 100.0);
-
-            if keycode.just_pressed(KeyCode::S) {
-                settings.kernel_size = match settings.kernel_size {
-                    KernelSize::Auto => KernelSize::Auto,
-                    KernelSize::Val(1) => KernelSize::Auto,
-                    KernelSize::Val(v) => KernelSize::Val((v - 2).clamp(1, 401)),
-                };
-            }
-            if keycode.just_pressed(KeyCode::W) {
-                settings.kernel_size = match settings.kernel_size {
-                    KernelSize::Auto => KernelSize::Val(1),
-                    KernelSize::Val(v) => KernelSize::Val((v + 2).clamp(1, 401)),
-                };
+                settings.kernel_size = (settings.kernel_size + 2).clamp(1, 401);
             }
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<GaussianBlurSettings>();
@@ -234,7 +220,7 @@ pub fn update_kawase_blur_settings(
     let text = &mut text.sections[0].value;
 
     match settings {
-        (entity, Some(mut settings)) => {
+        (entity, Some(_settings)) => {
             *text = "KawaseBlurSettings (Toggle: Space)\n".to_string();
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<KawaseBlurSettings>();
@@ -264,7 +250,7 @@ pub fn update_dual_blur_settings(
     let text = &mut text.sections[0].value;
 
     match settings {
-        (entity, Some(mut settings)) => {
+        (entity, Some(_settings)) => {
             *text = "DualBlurSettings (Toggle: Space)\n".to_string();
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<DualBlurSettings>();
