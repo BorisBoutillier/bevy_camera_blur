@@ -26,21 +26,21 @@ pub struct BoxBlurSettings {
     /// - A value of 1 disable the blurring effect.
     /// - Defaults to 21.
     ///
-    /// The computational cost of the box blur post-processing effect is `2*kernel_size*n_passes` texture sampling per pixels.
+    /// The computational cost of the box blur post-processing effect is `2*kernel_size*passes` texture sampling per pixels.
     pub kernel_size: u32,
     /// Defines the number of time the box convolution is apply successively.
     /// Multiple passes increases the quality of the blur and reduce the 'box' artefacts.
     /// - This value will be clamped to the range [1..5]
     /// - Defaults to 2
     ///
-    /// The computational cost of the box blur post-processing effect is `2*kernel_size*n_passes` texture sampling per pixels.
-    pub n_passes: u32,
+    /// The computational cost of the box blur post-processing effect is `2*kernel_size*passes` texture sampling per pixels.
+    pub passes: u32,
 }
 impl Default for BoxBlurSettings {
     fn default() -> Self {
         Self {
             kernel_size: 21,
-            n_passes: 2,
+            passes: 2,
         }
     }
 }
@@ -48,7 +48,7 @@ impl BoxBlurSettings {
     /// Box blur setting that will not trigger any blur post-processing
     pub const NO_BLUR: BoxBlurSettings = BoxBlurSettings {
         kernel_size: 1,
-        n_passes: 1,
+        passes: 1,
     };
     /// Computes a new `BoxBlurSettings` where each attribute is legal as expected by the shader.
     pub fn create_concrete(&self) -> BoxBlurSettings {
@@ -56,10 +56,10 @@ impl BoxBlurSettings {
         if kernel_size % 2 == 0 {
             kernel_size += 1;
         }
-        let n_passes = self.n_passes.clamp(1, 5);
+        let passes = self.passes.clamp(1, 5);
         BoxBlurSettings {
             kernel_size,
-            n_passes,
+            passes,
         }
     }
 }
@@ -77,7 +77,7 @@ impl ExtractComponent for BoxBlurSettings {
         } else {
             Some(BoxBlurUniforms {
                 kernel_size: settings.kernel_size,
-                n_passes: settings.n_passes,
+                passes: settings.passes,
                 _webgl2_padding: Vec2::ZERO,
             })
         }
@@ -89,6 +89,6 @@ impl ExtractComponent for BoxBlurSettings {
 #[derive(Component, ShaderType, Clone)]
 pub struct BoxBlurUniforms {
     pub kernel_size: u32,
-    pub n_passes: u32,
+    pub passes: u32,
     pub _webgl2_padding: Vec2,
 }

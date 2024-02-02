@@ -9,11 +9,10 @@ use bevy::{
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
             BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, ColorTargetState, ColorWrites, FragmentState,
-            MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
-            RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-            SamplerDescriptor, ShaderStages, ShaderType, TextureFormat, TextureSampleType,
-            TextureViewDimension,
+            BindingType, CachedRenderPipelineId, FragmentState, MultisampleState, Operations,
+            PipelineCache, PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
+            RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+            ShaderType, TextureFormat, TextureSampleType, TextureViewDimension,
         },
         renderer::{RenderContext, RenderDevice},
         texture::BevyDefault,
@@ -155,19 +154,12 @@ impl FromWorld for GaussianBlurPipeline {
             .queue_render_pipeline(RenderPipelineDescriptor {
                 label: Some("gaussian_blur_horizontal_pipeline".into()),
                 layout: vec![layout.clone()],
-                // This will setup a fullscreen triangle for the vertex state
                 vertex: fullscreen_shader_vertex_state(),
                 fragment: Some(FragmentState {
                     shader: GAUSSIAN_BLUR_SHADER_HANDLE,
                     shader_defs: vec![],
-                    // Make sure this matches the entry point of your shader.
-                    // It can be anything as long as it matches here and in the shader.
                     entry_point: "fragment_horizontal".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
+                    targets: vec![Some(TextureFormat::bevy_default().into())],
                 }),
                 // All of the following properties are not important for this effect so just use the default values.
                 // This struct doesn't have the Default trait implemented because not all field can have a default value.
@@ -176,33 +168,27 @@ impl FromWorld for GaussianBlurPipeline {
                 multisample: MultisampleState::default(),
                 push_constant_ranges: vec![],
             });
-        let vertical_pipeline_id = world
-            .resource_mut::<PipelineCache>()
-            // This will add the pipeline to the cache and queue it's creation
-            .queue_render_pipeline(RenderPipelineDescriptor {
-                label: Some("gaussian_blur_vertical_pipeline".into()),
-                layout: vec![layout.clone()],
-                // This will setup a fullscreen triangle for the vertex state
-                vertex: fullscreen_shader_vertex_state(),
-                fragment: Some(FragmentState {
-                    shader: GAUSSIAN_BLUR_SHADER_HANDLE,
-                    shader_defs: vec![],
-                    // Make sure this matches the entry point of your shader.
-                    // It can be anything as long as it matches here and in the shader.
-                    entry_point: "fragment_vertical".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
-                }),
-                // All of the following properties are not important for this effect so just use the default values.
-                // This struct doesn't have the Default trait implemented because not all field can have a default value.
-                primitive: PrimitiveState::default(),
-                depth_stencil: None,
-                multisample: MultisampleState::default(),
-                push_constant_ranges: vec![],
-            });
+        let vertical_pipeline_id =
+            world
+                .resource_mut::<PipelineCache>()
+                .queue_render_pipeline(RenderPipelineDescriptor {
+                    label: Some("gaussian_blur_vertical_pipeline".into()),
+                    layout: vec![layout.clone()],
+                    // This will setup a fullscreen triangle for the vertex state
+                    vertex: fullscreen_shader_vertex_state(),
+                    fragment: Some(FragmentState {
+                        shader: GAUSSIAN_BLUR_SHADER_HANDLE,
+                        shader_defs: vec![],
+                        entry_point: "fragment_vertical".into(),
+                        targets: vec![Some(TextureFormat::bevy_default().into())],
+                    }),
+                    // All of the following properties are not important for this effect so just use the default values.
+                    // This struct doesn't have the Default trait implemented because not all field can have a default value.
+                    primitive: PrimitiveState::default(),
+                    depth_stencil: None,
+                    multisample: MultisampleState::default(),
+                    push_constant_ranges: vec![],
+                });
 
         Self {
             layout,

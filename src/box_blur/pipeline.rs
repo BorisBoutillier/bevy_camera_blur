@@ -9,11 +9,10 @@ use bevy::{
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
             BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, ColorTargetState, ColorWrites, FragmentState,
-            MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
-            RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-            SamplerDescriptor, ShaderStages, ShaderType, TextureFormat, TextureSampleType,
-            TextureViewDimension,
+            BindingType, CachedRenderPipelineId, FragmentState, MultisampleState, Operations,
+            PipelineCache, PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
+            RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
+            ShaderType, TextureFormat, TextureSampleType, TextureViewDimension,
         },
         renderer::{RenderContext, RenderDevice},
         texture::BevyDefault,
@@ -57,7 +56,7 @@ impl ViewNode for BoxBlurNode {
             .command_encoder()
             .push_debug_group("box_blur");
 
-        for _ in 0..box_blur_uniforms.n_passes {
+        for _ in 0..box_blur_uniforms.passes {
             for pipeline in [horizontal_pipeline, vertical_pipeline] {
                 let post_process = view_target.post_process_write();
 
@@ -166,11 +165,7 @@ impl FromWorld for BoxBlurPipeline {
                     // Make sure this matches the entry point of your shader.
                     // It can be anything as long as it matches here and in the shader.
                     entry_point: "fragment_horizontal".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
+                    targets: vec![Some(TextureFormat::bevy_default().into())],
                 }),
                 // All of the following properties are not important for this effect so just use the default values.
                 // This struct doesn't have the Default trait implemented because not all field can have a default value.
@@ -193,11 +188,7 @@ impl FromWorld for BoxBlurPipeline {
                     // Make sure this matches the entry point of your shader.
                     // It can be anything as long as it matches here and in the shader.
                     entry_point: "fragment_vertical".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
+                    targets: vec![Some(TextureFormat::bevy_default().into())],
                 }),
                 // All of the following properties are not important for this effect so just use the default values.
                 // This struct doesn't have the Default trait implemented because not all field can have a default value.

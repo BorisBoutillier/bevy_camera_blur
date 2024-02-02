@@ -101,7 +101,7 @@ fn prepare_dual_blur_textures(
         }) = camera.physical_viewport_size
         {
             let mut textures = vec![];
-            for i in 0..settings.n_downsampling_passes {
+            for i in 0..settings.downsampling_passes {
                 let texture_descriptor = TextureDescriptor {
                     label: Some("dual_blur_texture"),
                     size: Extent3d {

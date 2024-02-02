@@ -8,7 +8,7 @@
 @group(0) @binding(1) var texture_sampler: sampler;
 struct BoxBlurUniforms {
     kernel_size: i32,
-    _n_passes: i32,
+    _passes: i32,
     // WebGL2 structs must be 16 byte aligned.
     _webgl2_padding: vec2<f32>,
 }

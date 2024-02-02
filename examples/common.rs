@@ -136,7 +136,7 @@ pub fn update_gaussian_blur_settings(
 
     match settings {
         (entity, Some(mut settings)) => {
-            *text = "GaussianBlurSettings (Toggle: Space)\n".to_string();
+            *text = "Gaussian Blur (Toggle: Space)\n".to_string();
             text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
 
             if keycode.just_pressed(KeyCode::A) {
@@ -151,7 +151,7 @@ pub fn update_gaussian_blur_settings(
         }
 
         (entity, None) => {
-            *text = "GaussianBlurSettings: Off (Toggle: Space)".to_string();
+            *text = "Gaussian Blur OFF (Toggle: Space)".to_string();
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands
@@ -174,9 +174,9 @@ pub fn update_box_blur_settings(
 
     match settings {
         (entity, Some(mut settings)) => {
-            *text = "BoxBlurSettings (Toggle: Space)\n".to_string();
+            *text = "Box Blur (Toggle: Space)\n".to_string();
             text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
-            text.push_str(&format!("(W/S) N passes: {:?}\n", settings.n_passes));
+            text.push_str(&format!("(W/S) N passes: {:?}\n", settings.passes));
 
             if keycode.just_pressed(KeyCode::A) {
                 settings.kernel_size = settings.kernel_size.saturating_sub(2);
@@ -187,12 +187,12 @@ pub fn update_box_blur_settings(
             settings.kernel_size = settings.kernel_size.clamp(1, 401);
 
             if keycode.just_pressed(KeyCode::S) {
-                settings.n_passes -= 1;
+                settings.passes -= 1;
             }
             if keycode.just_pressed(KeyCode::W) {
-                settings.n_passes += 1;
+                settings.passes += 1;
             }
-            settings.n_passes = settings.n_passes.clamp(1, 5);
+            settings.passes = settings.passes.clamp(1, 5);
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<BoxBlurSettings>();
@@ -200,7 +200,7 @@ pub fn update_box_blur_settings(
         }
 
         (entity, None) => {
-            *text = "BoxBlurSettings: Off (Toggle: Space)".to_string();
+            *text = "Box Blur OFF (Toggle: Space)".to_string();
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).insert(BoxBlurSettings::default());
@@ -221,14 +221,14 @@ pub fn update_kawase_blur_settings(
 
     match settings {
         (entity, Some(_settings)) => {
-            *text = "KawaseBlurSettings (Toggle: Space)\n".to_string();
+            *text = "Kawase Blur (Toggle: Space)\n".to_string();
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<KawaseBlurSettings>();
             }
         }
 
         (entity, None) => {
-            *text = "KawaseBlurSettings: Off (Toggle: Space)".to_string();
+            *text = "Kawase Blur OFF (Toggle: Space)".to_string();
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands
@@ -250,15 +250,26 @@ pub fn update_dual_blur_settings(
     let text = &mut text.sections[0].value;
 
     match settings {
-        (entity, Some(_settings)) => {
-            *text = "DualBlurSettings (Toggle: Space)\n".to_string();
+        (entity, Some(mut settings)) => {
+            *text = "Dual Blur (Toggle: Space)\n".to_string();
+            text.push_str(&format!(
+                "(Q/A) Downsampling passes: {}\n",
+                settings.downsampling_passes
+            ));
+
+            if keycode.just_pressed(KeyCode::Q) {
+                settings.downsampling_passes += 1
+            }
+            if keycode.just_pressed(KeyCode::A) {
+                settings.downsampling_passes = settings.downsampling_passes.max(1) - 1;
+            }
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).remove::<DualBlurSettings>();
             }
         }
 
         (entity, None) => {
-            *text = "DualBlurSettings: Off (Toggle: Space)".to_string();
+            *text = "Dual Blur OFF (Toggle: Space)".to_string();
 
             if keycode.just_pressed(KeyCode::Space) {
                 commands.entity(entity).insert(DualBlurSettings::default());

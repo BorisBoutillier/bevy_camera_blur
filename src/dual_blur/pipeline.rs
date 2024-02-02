@@ -7,8 +7,8 @@ use bevy::{
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
             BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, ColorTargetState, ColorWrites, FragmentState,
-            MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
+            BindingType, CachedRenderPipelineId, FilterMode, FragmentState, MultisampleState,
+            Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
             RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
             SamplerDescriptor, ShaderStages, TextureFormat, TextureSampleType,
             TextureViewDimension,
@@ -173,59 +173,55 @@ impl FromWorld for DualBlurPipeline {
         });
 
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
-        let sampler = render_device.create_sampler(&SamplerDescriptor::default());
+        let sampler = render_device.create_sampler(&SamplerDescriptor {
+            mag_filter: FilterMode::Linear,
+            min_filter: FilterMode::Linear,
+            ..default()
+        });
 
-        let downsample_pipeline_id = world
-            .resource_mut::<PipelineCache>()
-            // This will add the pipeline to the cache and queue it's creation
-            .queue_render_pipeline(RenderPipelineDescriptor {
-                label: Some("dual_blur_pipeline".into()),
-                layout: vec![layout.clone()],
-                // This will setup a fullscreen triangle for the vertex state
-                vertex: fullscreen_shader_vertex_state(),
-                fragment: Some(FragmentState {
-                    shader: DUAL_BLUR_SHADER_HANDLE,
-                    shader_defs: vec![],
-                    entry_point: "fragment_downsample".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
-                }),
-                // All of the following properties are not important for this effect so just use the default values.
-                // This struct doesn't have the Default trait implemented because not all field can have a default value.
-                primitive: PrimitiveState::default(),
-                depth_stencil: None,
-                multisample: MultisampleState::default(),
-                push_constant_ranges: vec![],
-            });
+        let downsample_pipeline_id =
+            world
+                .resource_mut::<PipelineCache>()
+                .queue_render_pipeline(RenderPipelineDescriptor {
+                    label: Some("dual_blur_pipeline".into()),
+                    layout: vec![layout.clone()],
+                    // This will setup a fullscreen triangle for the vertex state
+                    vertex: fullscreen_shader_vertex_state(),
+                    fragment: Some(FragmentState {
+                        shader: DUAL_BLUR_SHADER_HANDLE,
+                        shader_defs: vec![],
+                        entry_point: "fragment_downsample".into(),
+                        targets: vec![Some(TextureFormat::bevy_default().into())],
+                    }),
+                    // All of the following properties are not important for this effect so just use the default values.
+                    // This struct doesn't have the Default trait implemented because not all field can have a default value.
+                    primitive: PrimitiveState::default(),
+                    depth_stencil: None,
+                    multisample: MultisampleState::default(),
+                    push_constant_ranges: vec![],
+                });
 
-        let upsample_pipeline_id = world
-            .resource_mut::<PipelineCache>()
-            // This will add the pipeline to the cache and queue it's creation
-            .queue_render_pipeline(RenderPipelineDescriptor {
-                label: Some("dual_blur_pipeline".into()),
-                layout: vec![layout.clone()],
-                // This will setup a fullscreen triangle for the vertex state
-                vertex: fullscreen_shader_vertex_state(),
-                fragment: Some(FragmentState {
-                    shader: DUAL_BLUR_SHADER_HANDLE,
-                    shader_defs: vec![],
-                    entry_point: "fragment_upsample".into(),
-                    targets: vec![Some(ColorTargetState {
-                        format: TextureFormat::bevy_default(),
-                        blend: None,
-                        write_mask: ColorWrites::ALL,
-                    })],
-                }),
-                // All of the following properties are not important for this effect so just use the default values.
-                // This struct doesn't have the Default trait implemented because not all field can have a default value.
-                primitive: PrimitiveState::default(),
-                depth_stencil: None,
-                multisample: MultisampleState::default(),
-                push_constant_ranges: vec![],
-            });
+        let upsample_pipeline_id =
+            world
+                .resource_mut::<PipelineCache>()
+                .queue_render_pipeline(RenderPipelineDescriptor {
+                    label: Some("dual_blur_pipeline".into()),
+                    layout: vec![layout.clone()],
+                    // This will setup a fullscreen triangle for the vertex state
+                    vertex: fullscreen_shader_vertex_state(),
+                    fragment: Some(FragmentState {
+                        shader: DUAL_BLUR_SHADER_HANDLE,
+                        shader_defs: vec![],
+                        entry_point: "fragment_upsample".into(),
+                        targets: vec![Some(TextureFormat::bevy_default().into())],
+                    }),
+                    // All of the following properties are not important for this effect so just use the default values.
+                    // This struct doesn't have the Default trait implemented because not all field can have a default value.
+                    primitive: PrimitiveState::default(),
+                    depth_stencil: None,
+                    multisample: MultisampleState::default(),
+                    push_constant_ranges: vec![],
+                });
 
         Self {
             layout,
