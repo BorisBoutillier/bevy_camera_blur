@@ -4,13 +4,13 @@ use bevy::prelude::*;
 use bevy_camera_blur::*;
 use bevy_tweening::*;
 
-mod common;
+mod helpers;
 
 fn main() {
-    common::common_app()
+    helpers::common_app()
         .add_plugins((GaussianBlurPlugin, TweeningPlugin))
         .add_state::<GameState>()
-        .add_systems(Startup, (common::setup_3d_scene, setup_camera, setup_ui))
+        .add_systems(Startup, (helpers::setup_3d_scene, setup_camera, setup_ui))
         .add_systems(Update, component_animator_system::<GaussianBlurSettings>)
         .add_systems(Update, gamestate_interaction)
         .add_systems(OnEnter(GameState::Menu), (spawn_menu, blur))

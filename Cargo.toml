@@ -31,33 +31,15 @@ all-features = true
 bevy = "0.12"
 
 [[example]]
-name = "gaussian_blur_2d"
+name = "showcase_all_blurs_2d"
 
 [[example]]
-name = "gaussian_blur_3d"
+name = "showcase_all_blurs_3d"
 
 [[example]]
 name = "gaussian_blur_animated"
 required-features = [ "bevy_tweening" ]
 
 [[example]]
-name = "box_blur_2d"
-
-[[example]]
-name = "box_blur_3d"
-
-[[example]]
 name = "box_blur_animated"
 required-features = [ "bevy_tweening" ]
-
-[[example]]
-name = "kawase_blur_2d"
-
-[[example]]
-name = "kawase_blur_3d"
-
-[[example]]
-name = "dual_blur_2d"
-
-[[example]]
-name = "dual_blur_3d"
