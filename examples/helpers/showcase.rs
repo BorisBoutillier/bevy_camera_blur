@@ -33,7 +33,7 @@ impl From<usize> for BlurState {
 }
 
 #[derive(Resource, Default)]
-struct ResComp<C: Component>(C);
+pub struct ResComp<C: Component>(pub C);
 
 pub fn common_showcase_app() -> App {
     let mut app = common_app();
@@ -230,7 +230,9 @@ pub fn setup_3d_scene(
 }
 
 #[derive(Component)]
-pub struct BlurSettingsUiText;
+pub struct BlurSettingsUiText {
+    pub allow_user_interaction: bool,
+}
 
 pub fn setup_blur_settings_ui(mut commands: Commands) {
     commands.spawn((
@@ -248,7 +250,9 @@ pub fn setup_blur_settings_ui(mut commands: Commands) {
             left: Val::Px(10.0),
             ..default()
         }),
-        BlurSettingsUiText,
+        BlurSettingsUiText {
+            allow_user_interaction: true,
+        },
     ));
 }
 pub fn update_gaussian_blur_settings(
@@ -273,32 +277,34 @@ pub fn update_gaussian_blur_settings(
 
 pub fn update_box_blur_settings(
     mut settings: Query<&mut BoxBlurSettings, With<Camera>>,
-    mut text: Query<&mut Text, With<BlurSettingsUiText>>,
+    mut text: Query<(&mut Text, &BlurSettingsUiText)>,
     keycode: Res<Input<KeyCode>>,
 ) {
     let mut settings = settings.single_mut();
-    let mut text = text.single_mut();
+    let (mut text, settings_ui) = text.single_mut();
     let text = &mut text.sections[0].value;
 
     *text = "Box Blur settings:\n".to_string();
     text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
     text.push_str(&format!("(W/S) passes: {:?}\n", settings.passes));
 
-    if keycode.just_pressed(KeyCode::A) {
-        settings.kernel_size = settings.kernel_size.saturating_sub(2);
-    }
-    if keycode.just_pressed(KeyCode::Q) {
-        settings.kernel_size += 2;
-    }
-    settings.kernel_size = settings.kernel_size.clamp(1, 401);
+    if settings_ui.allow_user_interaction {
+        if keycode.just_pressed(KeyCode::A) {
+            settings.kernel_size = settings.kernel_size.saturating_sub(2);
+        }
+        if keycode.just_pressed(KeyCode::Q) {
+            settings.kernel_size += 2;
+        }
+        settings.kernel_size = settings.kernel_size.clamp(1, 401);
 
-    if keycode.just_pressed(KeyCode::S) {
-        settings.passes -= 1;
+        if keycode.just_pressed(KeyCode::S) {
+            settings.passes -= 1;
+        }
+        if keycode.just_pressed(KeyCode::W) {
+            settings.passes += 1;
+        }
+        settings.passes = settings.passes.clamp(1, 5);
     }
-    if keycode.just_pressed(KeyCode::W) {
-        settings.passes += 1;
-    }
-    settings.passes = settings.passes.clamp(1, 5);
 }
 
 pub fn update_kawase_blur_settings(
