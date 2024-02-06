@@ -3,7 +3,7 @@ use bevy::prelude::*;
 mod helpers;
 
 fn main() {
-    helpers::showcase::common_showcase_app()
+    helpers::common_showcase_app()
         .add_systems(Startup, (setup_camera, helpers::setup_3d_scene))
         .run();
 }
