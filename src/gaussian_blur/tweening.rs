@@ -39,9 +39,8 @@ pub struct GaussianBlurLens {
     /// Gaussian blur settings at the end of the tweening
     end: GaussianBlurSettings,
 }
-impl GaussianBlurLens {
-    /// Creates a new Lens to tween between the provided 'start' and 'end' setting.
-    pub fn new(start: GaussianBlurSettings, end: GaussianBlurSettings) -> Self {
+impl crate::BlurSettingLens<GaussianBlurSettings> for GaussianBlurLens {
+    fn new(start: GaussianBlurSettings, end: GaussianBlurSettings) -> Self {
         GaussianBlurLens {
             start: start.create_concrete(),
             end: end.create_concrete(),

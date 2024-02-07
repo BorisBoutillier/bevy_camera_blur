@@ -39,9 +39,8 @@ pub struct BoxBlurLens {
     /// Box blur settings at the end of the tweening
     end: BoxBlurSettings,
 }
-impl BoxBlurLens {
-    /// Creates a new Lens to tween between the provided 'start' and 'end' setting.
-    pub fn new(start: BoxBlurSettings, end: BoxBlurSettings) -> Self {
+impl crate::BlurSettingLens<BoxBlurSettings> for BoxBlurLens {
+    fn new(start: BoxBlurSettings, end: BoxBlurSettings) -> Self {
         BoxBlurLens {
             start: start.create_concrete(),
             end: end.create_concrete(),

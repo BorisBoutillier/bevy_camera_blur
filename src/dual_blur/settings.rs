@@ -30,11 +30,12 @@ impl Default for DualBlurSettings {
         }
     }
 }
-impl DualBlurSettings {
-    /// Dual blur setting that will not trigger any blur post-processing
-    pub const NO_BLUR: DualBlurSettings = DualBlurSettings {
+impl crate::NoBlurSetting for DualBlurSettings {
+    const NO_BLUR: DualBlurSettings = DualBlurSettings {
         downsampling_passes: 0,
     };
+}
+impl DualBlurSettings {
     /// Computes a new `DualBlurSettings` where each attribute is legal as expected by the shader.
     pub fn create_concrete(&self) -> DualBlurSettings {
         let downsampling_passes = self.downsampling_passes.clamp(0, 8);

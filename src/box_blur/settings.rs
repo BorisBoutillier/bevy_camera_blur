@@ -44,12 +44,13 @@ impl Default for BoxBlurSettings {
         }
     }
 }
-impl BoxBlurSettings {
-    /// Box blur setting that will not trigger any blur post-processing
-    pub const NO_BLUR: BoxBlurSettings = BoxBlurSettings {
+impl crate::NoBlurSetting for BoxBlurSettings {
+    const NO_BLUR: BoxBlurSettings = BoxBlurSettings {
         kernel_size: 1,
         passes: 1,
     };
+}
+impl BoxBlurSettings {
     /// Computes a new `BoxBlurSettings` where each attribute is legal as expected by the shader.
     pub fn create_concrete(&self) -> BoxBlurSettings {
         let mut kernel_size = self.kernel_size.clamp(1, 401);

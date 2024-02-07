@@ -31,9 +31,11 @@ impl Default for KawaseBlurSettings {
         }
     }
 }
+impl crate::NoBlurSetting for KawaseBlurSettings {
+    const NO_BLUR: KawaseBlurSettings = KawaseBlurSettings { kernels: vec![] };
+}
 impl KawaseBlurSettings {
     /// Kawase blur setting that will not trigger any blur post-processing
-    pub const NO_BLUR: KawaseBlurSettings = KawaseBlurSettings { kernels: vec![] };
     /// Computes a new `KawaseBlurSettings` where each attribute is legal as expected by the shader.
     pub fn create_concrete(&self) -> KawaseBlurSettings {
         let kernels = self

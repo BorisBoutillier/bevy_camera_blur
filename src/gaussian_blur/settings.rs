@@ -37,9 +37,10 @@ impl Default for GaussianBlurSettings {
         Self { kernel_size: 31 }
     }
 }
+impl crate::NoBlurSetting for GaussianBlurSettings {
+    const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings { kernel_size: 1 };
+}
 impl GaussianBlurSettings {
-    /// Gaussian blur setting that will not trigger any blur post-processing
-    pub const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings { kernel_size: 1 };
     /// Computes a new `GaussianBlurSettings` where each attribute is legal as expected by the shader.
     ///
     /// It also replaces `KernelSize::Auto` by `KernelSize::Val(v)` where v is the first odd value higher than `4.*sigma`.
