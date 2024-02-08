@@ -51,11 +51,11 @@ impl Lens<BoxBlurSettings> for BoxBlurLens {
     fn lerp(&mut self, target: &mut BoxBlurSettings, ratio: f32) {
         target.passes = (self.start.passes as f32
             + (self.end.passes as f32 - self.start.passes as f32) * ratio)
-            as u32;
+            .round() as u32;
         target.kernel_size = {
             let v1 = self.start.kernel_size;
             let v2 = self.end.kernel_size;
-            let v = (v1 as f32 + (v2 as f32 - v1 as f32) * ratio) as u32;
+            let v = (v1 as f32 + (v2 as f32 - v1 as f32) * ratio).round() as u32;
             if v % 2 == 0 {
                 v + 1
             } else {

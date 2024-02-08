@@ -52,7 +52,7 @@ impl Lens<GaussianBlurSettings> for GaussianBlurLens {
         let v1 = self.start.kernel_size as f32;
         let v2 = self.end.kernel_size as f32;
         target.kernel_size = {
-            let v = (v1 + (v2 - v1) * ratio) as u32;
+            let v = (v1 + (v2 - v1) * ratio).round() as u32;
             if v % 2 == 0 {
                 v + 1
             } else {
