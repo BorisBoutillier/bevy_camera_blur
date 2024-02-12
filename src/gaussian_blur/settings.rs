@@ -31,14 +31,27 @@ pub struct GaussianBlurSettings {
     ///
     /// The computational cost of the gaussian blur post-processing effect is `2*kernel_size` texture sampling per pixels.
     pub kernel_size: u32,
+    /// A factor that is applied whenever the post-processing effect is sampling for a distant pixel.
+    /// This can be used to create a bigger blur without impacting the computational cost, but sacrificing quality.
+    /// - It will be clamped to the range [1..100]
+    /// - Non integer values are supported, this will take advantage of linear filtering.
+    /// - Defaults to 1, which is the neutral value, not impacting the algorithm.
+    ///
+    pub sampling_distance_factor: f32,
 }
 impl Default for GaussianBlurSettings {
     fn default() -> Self {
-        Self { kernel_size: 31 }
+        Self {
+            kernel_size: 31,
+            sampling_distance_factor: 1.,
+        }
     }
 }
 impl crate::BlurSetting for GaussianBlurSettings {
-    const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings { kernel_size: 1 };
+    const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings {
+        kernel_size: 1,
+        sampling_distance_factor: 1.,
+    };
 
     fn sampling_per_pixel(&self) -> f32 {
         match self.kernel_size {
@@ -63,7 +76,10 @@ impl GaussianBlurSettings {
         if kernel_size % 2 == 0 {
             kernel_size += 1;
         }
-        GaussianBlurSettings { kernel_size }
+        GaussianBlurSettings {
+            kernel_size,
+            sampling_distance_factor: self.sampling_distance_factor.clamp(1.0, 100.0),
+        }
     }
 }
 
@@ -82,7 +98,8 @@ impl ExtractComponent for GaussianBlurSettings {
             Some(GaussianBlurUniforms {
                 sigma,
                 kernel_size: settings.kernel_size,
-                _webgl2_padding: Vec2::ZERO,
+                sampling_distance_factor: settings.sampling_distance_factor,
+                _webgl2_padding: 0.,
             })
         }
     }
@@ -96,6 +113,8 @@ pub struct GaussianBlurUniforms {
     pub kernel_size: u32,
     // Computed sigma value based on kernel_size
     pub sigma: f32,
+    // Legalized sampling_distance_factor
+    pub sampling_distance_factor: f32,
     // webgl2 requires 16B padding
-    pub _webgl2_padding: Vec2,
+    pub _webgl2_padding: f32,
 }

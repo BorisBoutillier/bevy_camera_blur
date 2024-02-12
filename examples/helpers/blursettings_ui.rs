@@ -42,6 +42,7 @@ pub fn update_gaussian_blur_settings(
     mut settings: Query<&mut GaussianBlurSettings, With<Camera>>,
     mut text: Query<&mut Text, With<BlurSettingsUiText>>,
     keycode: Res<Input<KeyCode>>,
+    time: Res<Time>,
 ) {
     if let Ok(mut settings) = settings.get_single_mut() {
         let mut text = text.single_mut();
@@ -50,12 +51,24 @@ pub fn update_gaussian_blur_settings(
 
         *text = "Gaussian Blur settings:\n".to_string();
         text.push_str(&format!("(Q/A) Kernel size: {}\n", settings.kernel_size));
+        text.push_str(&format!(
+            "(W/S) Sampling distance factor: {:.1}\n",
+            settings.sampling_distance_factor
+        ));
 
         if keycode.just_pressed(KeyCode::A) {
             settings.kernel_size = settings.kernel_size.saturating_sub(2).clamp(1, 401);
         }
         if keycode.just_pressed(KeyCode::Q) {
             settings.kernel_size = (settings.kernel_size + 2).clamp(1, 401);
+        }
+        if keycode.pressed(KeyCode::W) {
+            settings.sampling_distance_factor =
+                (settings.sampling_distance_factor + time.delta_seconds() * 1.).clamp(1., 100.);
+        }
+        if keycode.pressed(KeyCode::S) {
+            settings.sampling_distance_factor =
+                (settings.sampling_distance_factor - time.delta_seconds() * 1.).clamp(1., 100.);
         }
     }
 }
