@@ -7,14 +7,18 @@ pub struct BlurSettingsUiText {
 
 pub fn setup_blur_settings_ui(mut commands: Commands) {
     commands.spawn((
-        TextBundle::from_section(
-            "",
-            TextStyle {
+        TextBundle::from_sections([
+            TextSection::from_style(TextStyle {
                 font_size: 18.0,
                 color: Color::WHITE,
                 ..default()
-            },
-        )
+            }),
+            TextSection::from_style(TextStyle {
+                font_size: 14.0,
+                color: Color::WHITE,
+                ..default()
+            }),
+        ])
         .with_style(Style {
             position_type: PositionType::Absolute,
             bottom: Val::Px(10.0),
@@ -26,6 +30,14 @@ pub fn setup_blur_settings_ui(mut commands: Commands) {
         },
     ));
 }
+
+fn settings_info(settings: &impl BlurSetting) -> String {
+    format!(
+        "\nSetting cost:\nSamplings per pixel: ~{:.1}\nPost-processing passes: {}",
+        settings.sampling_per_pixel(),
+        settings.passes(),
+    )
+}
 pub fn update_gaussian_blur_settings(
     mut settings: Query<&mut GaussianBlurSettings, With<Camera>>,
     mut text: Query<&mut Text, With<BlurSettingsUiText>>,
@@ -33,6 +45,7 @@ pub fn update_gaussian_blur_settings(
 ) {
     if let Ok(mut settings) = settings.get_single_mut() {
         let mut text = text.single_mut();
+        text.sections[1].value = settings_info(&*settings);
         let text = &mut text.sections[0].value;
 
         *text = "Gaussian Blur settings:\n".to_string();
@@ -54,6 +67,7 @@ pub fn update_box_blur_settings(
 ) {
     if let Ok(mut settings) = settings.get_single_mut() {
         let (mut text, settings_ui) = text.single_mut();
+        text.sections[1].value = settings_info(&*settings);
         let text = &mut text.sections[0].value;
 
         *text = "Box Blur settings:\n".to_string();
@@ -88,6 +102,7 @@ pub fn update_kawase_blur_settings(
 ) {
     if let Ok(mut settings) = settings.get_single_mut() {
         let mut text = text.single_mut();
+        text.sections[1].value = settings_info(&*settings);
         let text = &mut text.sections[0].value;
 
         *text = "Kawase Blur settings:\n".to_string();
@@ -111,6 +126,7 @@ pub fn update_kawase_blur_settings(
         text.push_str("(Q/A) Change kernels length\n");
         text.push_str("(W/S) Change selected kernel value\n");
         text.push_str("(D/F) Change selected kernel entry\n");
+
         if keycode.just_pressed(KeyCode::Q) {
             let v = settings.kernels.len() as u32;
             settings.kernels.push(v);
@@ -141,6 +157,7 @@ pub fn update_dual_blur_settings(
 ) {
     if let Ok(mut settings) = settings.get_single_mut() {
         let mut text = text.single_mut();
+        text.sections[1].value = settings_info(&*settings);
         let text = &mut text.sections[0].value;
 
         *text = "Dual Blur settings:\n".to_string();

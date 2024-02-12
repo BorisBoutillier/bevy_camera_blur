@@ -246,7 +246,7 @@ fn blur_settings_color<C: Component>(
         Color::WHITE
     }
 }
-fn animate_blur<C: Component + Clone + NoBlurSetting, L: BlurSettingLens<C>>(
+fn animate_blur<C: Component + Clone + BlurSetting, L: BlurSettingLens<C>>(
     mut commands: Commands,
     camera: Query<Entity, With<Camera>>,
     res_settings: Res<ResComp<C>>,
@@ -260,7 +260,7 @@ fn animate_blur<C: Component + Clone + NoBlurSetting, L: BlurSettingLens<C>>(
     let camera_entity = camera.single();
     commands.entity(camera_entity).insert(Animator::new(tween));
 }
-fn animate_deblur<C: Component + Clone + NoBlurSetting, L: BlurSettingLens<C>>(
+fn animate_deblur<C: Component + Clone + BlurSetting, L: BlurSettingLens<C>>(
     mut commands: Commands,
     camera: Query<(Entity, &C), With<Camera>>,
     mut stored_settings: ResMut<ResComp<C>>,
@@ -276,7 +276,7 @@ fn animate_deblur<C: Component + Clone + NoBlurSetting, L: BlurSettingLens<C>>(
     commands.entity(camera_entity).insert(Animator::new(tween));
 }
 
-fn add_blur<C: Component + Clone + NoBlurSetting>(
+fn add_blur<C: Component + Clone + BlurSetting>(
     mut commands: Commands,
     camera: Query<Entity, With<Camera>>,
     res_settings: Res<ResComp<C>>,

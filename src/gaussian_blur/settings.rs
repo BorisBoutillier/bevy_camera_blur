@@ -29,7 +29,7 @@ pub struct GaussianBlurSettings {
     /// - It defaults to 31 (sigma = 5).
     /// The associated `sigma` value for the gaussian function will be computed as `(kernel_size-1)/6`, so that the kernel extends to  a `3*sigma` range.
     ///
-    /// The computational cost of the gaussian blur post-processing effect is `2*kernel_size`` texture sampling per pixels.
+    /// The computational cost of the gaussian blur post-processing effect is `2*kernel_size` texture sampling per pixels.
     pub kernel_size: u32,
 }
 impl Default for GaussianBlurSettings {
@@ -37,8 +37,22 @@ impl Default for GaussianBlurSettings {
         Self { kernel_size: 31 }
     }
 }
-impl crate::NoBlurSetting for GaussianBlurSettings {
+impl crate::BlurSetting for GaussianBlurSettings {
     const NO_BLUR: GaussianBlurSettings = GaussianBlurSettings { kernel_size: 1 };
+
+    fn sampling_per_pixel(&self) -> f32 {
+        match self.kernel_size {
+            1 => 0.,
+            k => (2 * k) as f32,
+        }
+    }
+
+    fn passes(&self) -> u32 {
+        match self.kernel_size {
+            1 => 0,
+            _ => 2,
+        }
+    }
 }
 impl GaussianBlurSettings {
     /// Computes a new `GaussianBlurSettings` where each attribute is legal as expected by the shader.

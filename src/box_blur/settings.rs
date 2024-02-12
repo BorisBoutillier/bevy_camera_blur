@@ -44,11 +44,25 @@ impl Default for BoxBlurSettings {
         }
     }
 }
-impl crate::NoBlurSetting for BoxBlurSettings {
+impl crate::BlurSetting for BoxBlurSettings {
     const NO_BLUR: BoxBlurSettings = BoxBlurSettings {
         kernel_size: 1,
         passes: 1,
     };
+
+    fn sampling_per_pixel(&self) -> f32 {
+        match self.kernel_size {
+            1 => 0.0,
+            k => (2 * k * self.passes) as f32,
+        }
+    }
+
+    fn passes(&self) -> u32 {
+        match self.kernel_size {
+            1 => 0,
+            _ => self.passes,
+        }
+    }
 }
 impl BoxBlurSettings {
     /// Computes a new `BoxBlurSettings` where each attribute is legal as expected by the shader.

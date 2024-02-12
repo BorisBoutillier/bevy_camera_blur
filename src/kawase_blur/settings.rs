@@ -31,8 +31,16 @@ impl Default for KawaseBlurSettings {
         }
     }
 }
-impl crate::NoBlurSetting for KawaseBlurSettings {
+impl crate::BlurSetting for KawaseBlurSettings {
     const NO_BLUR: KawaseBlurSettings = KawaseBlurSettings { kernels: vec![] };
+
+    fn sampling_per_pixel(&self) -> f32 {
+        (4 * self.kernels.len()) as f32
+    }
+
+    fn passes(&self) -> u32 {
+        self.kernels.len() as u32
+    }
 }
 impl KawaseBlurSettings {
     /// Kawase blur setting that will not trigger any blur post-processing

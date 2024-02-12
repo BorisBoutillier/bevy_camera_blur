@@ -30,10 +30,21 @@ impl Default for DualBlurSettings {
         }
     }
 }
-impl crate::NoBlurSetting for DualBlurSettings {
+impl crate::BlurSetting for DualBlurSettings {
     const NO_BLUR: DualBlurSettings = DualBlurSettings {
         downsampling_passes: 0,
     };
+
+    fn sampling_per_pixel(&self) -> f32 {
+        // For each pass there is 5 for downsampling but at image size/4 + 8 for upsampling.
+        (0..self.downsampling_passes).fold(0.0, |samplings, pass| {
+            samplings + (5.0 / 4.0 + 8.0) / (4.0_f32.powi(pass as i32))
+        })
+    }
+
+    fn passes(&self) -> u32 {
+        self.downsampling_passes * 2
+    }
 }
 impl DualBlurSettings {
     /// Computes a new `DualBlurSettings` where each attribute is legal as expected by the shader.
