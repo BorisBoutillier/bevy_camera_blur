@@ -12,6 +12,8 @@ Here are the currently supporting algorithm and their associated plugin:
 |-----------| ------ |
 | Gaussian Blur | `GaussianBlurPlugin` |
 | Box Blur | `BoxBlurPlugin` |
+| Kawase Blur | `KawaseBlurPlugin` |
+| Dual Blur | `DualBlurPlugin` |
 
 ## Examples
 

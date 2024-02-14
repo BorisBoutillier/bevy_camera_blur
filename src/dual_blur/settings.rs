@@ -4,23 +4,13 @@ use bevy::render::extract_component::ExtractComponent;
 
 /// Applies a dual blur effect to a 2d or 3d camera.
 ///
-/// It must be added as a Component to a 2D or 3D Camera
-///
-/// ```
-///# use bevy::prelude::*;
-///# use bevy_camera_blur::*;
-///
-///pub fn setup(mut commands: Commands) {
-///    commands.spawn((
-///        Camera2dBundle::default(),
-///        DualBlurSettings::default(),
-///    ));
-///}
-///```
 #[derive(Component, Reflect, Clone, Debug)]
 #[reflect(Component, Default)]
 pub struct DualBlurSettings {
-    /// TODO:
+    /// Defines the number of downsampling passes to do. There will be an equivalent number of upsampling passes.
+    /// Each of these passes will use the kernel described by Marius Bjorge in his presentation.
+    /// - It will be clamped to the range [0..8]
+    /// - Defaults to 4
     pub downsampling_passes: u32,
 }
 impl Default for DualBlurSettings {

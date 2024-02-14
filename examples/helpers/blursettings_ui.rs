@@ -122,7 +122,7 @@ pub fn update_kawase_blur_settings(
         let kernel_str = format!(
             "Kernels: [{}]\n",
             settings
-                .kernels
+                .sampling_distances
                 .iter()
                 .enumerate()
                 .map(|(i, v)| {
@@ -141,24 +141,25 @@ pub fn update_kawase_blur_settings(
         text.push_str("(D/F) Change selected kernel entry\n");
 
         if keycode.just_pressed(KeyCode::Q) {
-            let v = settings.kernels.len() as u32;
-            settings.kernels.push(v);
+            let v = settings.sampling_distances.len() as u32;
+            settings.sampling_distances.push(v);
         }
         if keycode.just_pressed(KeyCode::A) {
-            settings.kernels.pop();
-            *selected = (*selected).min(settings.kernels.len().max(1) - 1);
+            settings.sampling_distances.pop();
+            *selected = (*selected).min(settings.sampling_distances.len().max(1) - 1);
         }
         if keycode.just_pressed(KeyCode::D) {
             *selected = selected.max(1) - 1;
         }
         if keycode.just_pressed(KeyCode::F) {
-            *selected = (*selected + 1).min(settings.kernels.len() - 1);
+            *selected = (*selected + 1).min(settings.sampling_distances.len() - 1);
         }
         if keycode.just_pressed(KeyCode::W) {
-            settings.kernels[*selected] += 1;
+            settings.sampling_distances[*selected] += 1;
         }
         if keycode.just_pressed(KeyCode::S) {
-            settings.kernels[*selected] = settings.kernels[*selected].max(1) - 1;
+            settings.sampling_distances[*selected] =
+                settings.sampling_distances[*selected].max(1) - 1;
         }
     }
 }

@@ -2,21 +2,8 @@ use bevy::ecs::query::QueryItem;
 use bevy::prelude::*;
 use bevy::render::{extract_component::ExtractComponent, render_resource::ShaderType};
 
-/// Applies a box blur effect to a 2d or 3d camera.
+/// Applies a box blur effect to a 2d or 3d camera in conjonction with the [`GaussianBlurPlugin`]
 ///
-/// It must be added as a Component to a 2D or 3D Camera
-///
-/// ```
-///# use bevy::prelude::*;
-///# use bevy_camera_blur::*;
-///
-///pub fn setup(mut commands: Commands) {
-///    commands.spawn((
-///        Camera2dBundle::default(),
-///        BoxBlurSettings::default(),
-///    ));
-///}
-///```
 #[derive(Component, Reflect, Clone, Copy, Debug)]
 #[reflect(Component, Default)]
 pub struct BoxBlurSettings {

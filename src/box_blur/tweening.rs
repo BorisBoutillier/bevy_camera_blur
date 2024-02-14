@@ -17,7 +17,7 @@ use crate::BoxBlurSettings;
 ///# use bevy_camera_blur::*;
 ///# use std::time::Duration;
 ///
-///pub fn blur(
+///fn blur(
 ///    mut commands: Commands,
 ///    camera: Query<Entity, (With<Camera>, With<BoxBlurSettings>)>,
 ///) {

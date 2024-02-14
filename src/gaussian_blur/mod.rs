@@ -26,10 +26,26 @@ const GAUSSIAN_BLUR_SHADER_HANDLE: Handle<Shader> =
 
 /// This plugins adds support for a gaussian blur post-processing effects to 2D or 3D cameras.
 ///
-/// It must be used in conjonction with the  [`GaussianBlurSettings`] component that must be added to any 2D or 3D Camera entity.
+/// It must be used in conjonction with a [`GaussianBlurSettings`] component added to the Camera entity.
 ///
-/// See [`GaussianBlurSettings`] for more details and example.
+/// See algorithm details on [Wikipedia](https://en.wikipedia.org/wiki/Gaussian_blur).
+/// Additional details on blur filters can be seen in this [Intel article](https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html)
 ///
+/// This implementation is done with 2 post-processing passes.
+///
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_camera_blur::*;
+///
+///pub fn setup(mut commands: Commands) {
+///    commands.spawn((
+///        Camera2dBundle::default(),
+///        GaussianBlurSettings::default(),
+///    ));
+///}
+///```
+///
+/// See [`GaussianBlurSettings`] for configurability.
 pub struct GaussianBlurPlugin;
 
 impl Plugin for GaussianBlurPlugin {

@@ -20,7 +20,7 @@ use bevy::{
 };
 // The post process node used for the render graph
 #[derive(Default)]
-pub struct DualBlurNode;
+pub(crate) struct DualBlurNode;
 impl DualBlurNode {
     pub const NAME: &'static str = "dual_blur";
 }

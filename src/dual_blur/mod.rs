@@ -28,11 +28,23 @@ const DUAL_BLUR_SHADER_HANDLE: Handle<Shader> =
 
 /// This plugins adds support for a Dual blur post-processing effects to 2D or 3D cameras.
 ///
-/// TODO:
+/// It must be used in conjonction with a [`DualBlurSettings`] component added to the Camera entity.
 ///
-/// It must be used in conjonction with the  [`DualBlurSettings`] component that must be added to any 2D or 3D Camera entity.
+/// It implements the "Dual Kawase Blur" algorithm from Marius Bjorge as described in his [SIGGRAPH 2015 presentation](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjj2e69hauEAxXaTqQEHWaoB9AQFnoECBIQAQ&url=https%3A%2F%2Fcommunity.arm.com%2Fcfs-file%2F__key%2Fcommunityserver-blogs-components-weblogfiles%2F00-00-00-20-66%2Fsiggraph2015_2D00_mmg_2D00_marius_2D00_slides.pdf&usg=AOvVaw1Ks3_FP92nnFhANxeIlBAS&opi=89978449)
 ///
-/// See [`DualBlurSettings`] for more details and example.
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_camera_blur::*;
+///
+///pub fn setup(mut commands: Commands) {
+///    commands.spawn((
+///        Camera2dBundle::default(),
+///        DualBlurSettings::default(),
+///    ));
+///}
+///```
+///
+/// See [`DualBlurSettings`] for configurability.
 ///
 pub struct DualBlurPlugin;
 
@@ -125,8 +137,7 @@ fn prepare_dual_blur_textures(
     }
 }
 #[derive(Component)]
-/// TODO:
-pub struct DualBlurTexture {
+pub(crate) struct DualBlurTexture {
     textures: Vec<CachedTexture>,
 }
 

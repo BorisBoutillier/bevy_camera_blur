@@ -26,9 +26,26 @@ const BOX_BLUR_SHADER_HANDLE: Handle<Shader> =
 
 /// This plugins adds support for a box blur post-processing effects to 2D or 3D cameras.
 ///
-/// It must be used in conjonction with the  [`BoxBlurSettings`] component that must be added to any 2D or 3D Camera entity.
+/// It must be used in conjonction with a [`BoxBlurSettings`] component added to the Camera entity.
 ///
-/// See [`BoxBlurSettings`] for more details and example.
+/// See algorithm details on [Wikipedia](https://en.wikipedia.org/wiki/Box_blur).
+/// Additional details on blur filters can be found in this [Intel article](https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html)
+///
+/// This implementation is done with 2 post-processing passes.
+///
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_camera_blur::*;
+///
+///fn setup(mut commands: Commands) {
+///    commands.spawn((
+///        Camera2dBundle::default(),
+///        BoxBlurSettings::default(),
+///    ));
+///}
+///```
+///
+/// See [`BoxBlurSettings`] for configurability.
 ///
 pub struct BoxBlurPlugin;
 

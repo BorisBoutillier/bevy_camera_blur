@@ -1,6 +1,6 @@
 use super::settings::{KawaseBlurSettings, KawaseBlurUniforms};
 use super::KAWASE_BLUR_SHADER_HANDLE;
-use bevy::render::render_resource::UniformBuffer;
+use bevy::render::render_resource::{FilterMode, UniformBuffer};
 use bevy::render::renderer::RenderQueue;
 use bevy::{
     core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
@@ -51,9 +51,9 @@ impl ViewNode for KawaseBlurNode {
             .push_debug_group("kawase_blur");
 
         let mut uniform = UniformBuffer::<KawaseBlurUniforms>::default();
-        for &kernel in kawase_blur_settings.kernels.iter() {
+        for &sampling_distance in kawase_blur_settings.sampling_distances.iter() {
             uniform.set(KawaseBlurUniforms {
-                kernel: kernel as f32,
+                sampling_distance: sampling_distance as f32,
                 ..default()
             });
             uniform.write_buffer(render_context.render_device(), queue);
@@ -145,7 +145,12 @@ impl FromWorld for KawaseBlurPipeline {
         });
 
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
-        let sampler = render_device.create_sampler(&SamplerDescriptor::default());
+        let sampler = render_device.create_sampler(&SamplerDescriptor {
+            mag_filter: FilterMode::Linear,
+            min_filter: FilterMode::Linear,
+            mipmap_filter: FilterMode::Linear,
+            ..default()
+        });
 
         let pipeline_id = world
             .resource_mut::<PipelineCache>()

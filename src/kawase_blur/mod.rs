@@ -20,12 +20,27 @@ const KAWASE_BLUR_SHADER_HANDLE: Handle<Shader> =
     Handle::weak_from_u128(0x25a6854386ee40c28864d2e724268b7a);
 
 /// This plugins adds support for a Kawase blur post-processing effects to 2D or 3D cameras.
+/// It must be used in conjonction with a [`KawaseBlurSettings`] component added to the Camera entity.
 ///
-/// The Kawase blur is a close approximation to a gaussian blur that require less texture sampling per pixels.
+/// The Kawase blur is a close approximation to a gaussian blur that require less texture sampling per pixels but multiple passes.
+/// It has been introduced by Masaki Kawase in his GDC2003 presentation “Frame Buffer Postprocessing Effects in DOUBLE-S.T.E.A.L (Wreckless)” [PPT](http://www.daionet.gr.jp/~masa/archives/GDC2003_DSTEAL.ppt).
+/// Additional details on blur filters can be seen in this [Intel article](https://www.intel.com/content/www/us/en/developer/articles/technical/an-investigation-of-fast-real-time-gpu-based-image-blur-algorithms.html)
 ///
-/// It must be used in conjonction with the  [`KawaseBlurSettings`] component that must be added to any 2D or 3D Camera entity.
+/// This implementation is done at full resolution, with one pass per sampling distance value.
 ///
-/// See [`KawaseBlurSettings`] for more details and example.
+/// ```
+///# use bevy::prelude::*;
+///# use bevy_camera_blur::*;
+///
+///pub fn setup(mut commands: Commands) {
+///    commands.spawn((
+///        Camera2dBundle::default(),
+///        KawaseBlurSettings::default(),
+///    ));
+///}
+///```
+///
+/// See [`KawaseBlurSettings`] for configurability.
 ///
 pub struct KawaseBlurPlugin;
 

@@ -17,7 +17,6 @@ fn fragment(in: FullscreenVertexOutput) -> @location(0) vec4<f32> {
     let texture_size = vec2<f32>(textureDimensions(screen_texture));
     let texel_size = 1.0 / texture_size;
     let d = settings.sampling_distance + 0.5;
-    //let d = 0.5;
     var color = textureSample(screen_texture, texture_sampler, in.uv + vec2(d, d) * texel_size);
     color += textureSample(screen_texture, texture_sampler, in.uv + vec2(-d, d) * texel_size);
     color += textureSample(screen_texture, texture_sampler, in.uv + vec2(-d, -d) * texel_size);
