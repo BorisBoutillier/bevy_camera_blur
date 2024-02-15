@@ -1,0 +1,4 @@
+- Kawase/Gaussian/Box blur should support to be done after a downsampling factor.
+  This downsampling factor should be configurable.
+- When bevy-0.13 is released, check to the new Animatable trait to remove relying on bevy_tweening.
+

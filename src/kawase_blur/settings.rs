@@ -2,9 +2,6 @@ use bevy::ecs::query::QueryItem;
 use bevy::prelude::*;
 use bevy::render::{extract_component::ExtractComponent, render_resource::ShaderType};
 
-// TODO: It seems Kawase blur benefits from first downsampling the image
-// This downsampling factor should be configurable.
-
 /// Applies a kawase blur effect to a 2d or 3d camera if the [`KawaseBlurPlugin`] is active.
 ///
 #[derive(Component, Reflect, Clone, Debug)]
