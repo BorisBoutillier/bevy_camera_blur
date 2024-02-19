@@ -46,12 +46,12 @@ impl KawaseBlurSettings {
 }
 
 impl ExtractComponent for KawaseBlurSettings {
-    type Query = &'static Self;
+    type QueryData = &'static Self;
 
-    type Filter = ();
+    type QueryFilter = ();
     type Out = KawaseBlurSettings;
 
-    fn extract_component(settings: QueryItem<'_, Self::Query>) -> Option<Self::Out> {
+    fn extract_component(settings: QueryItem<'_, Self::QueryData>) -> Option<Self::Out> {
         if settings.sampling_distances.is_empty() {
             None
         } else {

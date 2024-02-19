@@ -8,7 +8,7 @@ pub fn common_showcase_app() -> App {
         KawaseBlurPlugin,
         DualBlurPlugin,
     ))
-    .add_state::<BlurType>()
+    .init_state::<BlurType>()
     .insert_resource(ResComp::<GaussianBlurSettings>::default())
     .insert_resource(ResComp::<BoxBlurSettings>::default())
     .insert_resource(ResComp::<KawaseBlurSettings>::default())
@@ -69,28 +69,28 @@ fn del_blur<C: Component + Clone>(
 
 fn update_blurtype(
     state: Res<State<BlurType>>,
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
     mut next_state: ResMut<NextState<BlurType>>,
 ) {
-    if input.just_pressed(KeyCode::Left) {
+    if input.just_pressed(KeyCode::ArrowLeft) {
         next_state.set(state.prev());
     }
-    if input.just_pressed(KeyCode::Right) {
+    if input.just_pressed(KeyCode::ArrowRight) {
         next_state.set(state.next());
     }
-    if input.just_pressed(KeyCode::Key0) {
+    if input.just_pressed(KeyCode::Digit0) {
         next_state.set(0.into());
     }
-    if input.just_pressed(KeyCode::Key1) {
+    if input.just_pressed(KeyCode::Digit1) {
         next_state.set(1.into());
     }
-    if input.just_pressed(KeyCode::Key2) {
+    if input.just_pressed(KeyCode::Digit2) {
         next_state.set(2.into());
     }
-    if input.just_pressed(KeyCode::Key3) {
+    if input.just_pressed(KeyCode::Digit3) {
         next_state.set(3.into());
     }
-    if input.just_pressed(KeyCode::Key4) {
+    if input.just_pressed(KeyCode::Digit4) {
         next_state.set(4.into());
     }
 }

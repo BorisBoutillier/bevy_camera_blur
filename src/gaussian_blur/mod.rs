@@ -8,8 +8,10 @@ pub use tweening::*;
 
 use bevy::{
     asset::load_internal_asset,
-    core_pipeline::core_2d::{self, CORE_2D},
-    core_pipeline::core_3d::{self, CORE_3D},
+    core_pipeline::{
+        core_2d::graph::{Core2d, Node2d},
+        core_3d::graph::{Core3d, Node3d},
+    },
     prelude::*,
     render::{
         extract_component::{ExtractComponentPlugin, UniformComponentPlugin},
@@ -69,30 +71,24 @@ impl Plugin for GaussianBlurPlugin {
 
         render_app
             // Add gaussian blur to the 3d render graph;
-            .add_render_graph_node::<ViewNodeRunner<GaussianBlurNode>>(
-                CORE_3D,
-                GaussianBlurNode::NAME,
-            )
+            .add_render_graph_node::<ViewNodeRunner<GaussianBlurNode>>(Core3d, GaussianBlurLabel)
             .add_render_graph_edges(
-                CORE_3D,
-                &[
-                    core_3d::graph::node::TONEMAPPING,
-                    GaussianBlurNode::NAME,
-                    core_3d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core3d,
+                (
+                    Node3d::Tonemapping,
+                    GaussianBlurLabel,
+                    Node3d::EndMainPassPostProcessing,
+                ),
             )
             // Add gaussian blur to the 2d render graph
-            .add_render_graph_node::<ViewNodeRunner<GaussianBlurNode>>(
-                CORE_2D,
-                GaussianBlurNode::NAME,
-            )
+            .add_render_graph_node::<ViewNodeRunner<GaussianBlurNode>>(Core2d, GaussianBlurLabel)
             .add_render_graph_edges(
-                CORE_2D,
-                &[
-                    core_2d::graph::node::TONEMAPPING,
-                    GaussianBlurNode::NAME,
-                    core_2d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core2d,
+                (
+                    Node2d::Tonemapping,
+                    GaussianBlurLabel,
+                    Node2d::EndMainPassPostProcessing,
+                ),
             );
     }
 

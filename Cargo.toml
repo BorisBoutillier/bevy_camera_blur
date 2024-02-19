@@ -14,13 +14,13 @@ autoexamples = false
 [features]
 default = []
 # Enable support for Lens implementations for bevy_tweening
-bevy_tweening = [ "dep:bevy_tweening" ]
+#bevy_tweening = [ "dep:bevy_tweening" ]
 
-[dependencies]
-bevy_tweening = {version = "0.9" , optional = true }
+#[dependencies]
+#bevy_tweening = {version = "0.9" , optional = true }
 
 [dependencies.bevy]
-version = "0.12"
+version = "0.13"
 default-features = false
 features = ["bevy_core_pipeline" , "bevy_render"]
 
@@ -28,7 +28,7 @@ features = ["bevy_core_pipeline" , "bevy_render"]
 all-features = true
 
 [dev-dependencies]
-bevy = "0.12"
+bevy = "0.13"
 
 [[example]]
 name = "blurs_showcase_2d"
@@ -36,10 +36,10 @@ name = "blurs_showcase_2d"
 [[example]]
 name = "blurs_showcase_3d"
 
-[[example]]
-name = "blurs_animation_2d"
-required-features = [ "bevy_tweening" ]
-
-[[example]]
-name = "blurs_animation_3d"
-required-features = [ "bevy_tweening" ]
+#[[example]]
+#name = "blurs_animation_2d"
+#required-features = [ "bevy_tweening" ]
+#
+#[[example]]
+#name = "blurs_animation_3d"
+#required-features = [ "bevy_tweening" ]

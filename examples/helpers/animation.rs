@@ -15,11 +15,11 @@ pub fn common_animation_app() -> App {
         DualBlurPlugin,
         TweeningPlugin,
     ))
-    .add_state::<BlurType>()
+    .init_state::<BlurType>()
     .insert_resource(ResComp::<GaussianBlurSettings>::default())
     .insert_resource(ResComp::<BoxBlurSettings>::default())
     .insert_resource(ResComp::<DualBlurSettings>::default())
-    .add_state::<GameState>()
+    .init_state::<GameState>()
     .insert_resource(AnimationDurationMs(500))
     .add_systems(
         Startup,
@@ -88,7 +88,7 @@ const ANIMATABLE_BLURTYPES: [BlurType; 3] = [BlurType::Gaussian, BlurType::Box, 
 
 fn update_blurtype(
     state: Res<State<BlurType>>,
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
     mut next_state: ResMut<NextState<BlurType>>,
 ) {
     if input.just_pressed(KeyCode::Left) {
@@ -119,7 +119,7 @@ fn update_blurtype(
 fn gamestate_interaction(
     state: Res<State<GameState>>,
     mut next_state: ResMut<NextState<GameState>>,
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
     mut duration: ResMut<AnimationDurationMs>,
     mut text: Query<&mut Text, With<AnimationUiText>>,
 ) {

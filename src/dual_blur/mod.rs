@@ -5,8 +5,10 @@ pub use settings::DualBlurSettings;
 
 use bevy::{
     asset::load_internal_asset,
-    core_pipeline::core_2d::{self, CORE_2D},
-    core_pipeline::core_3d::{self, CORE_3D},
+    core_pipeline::{
+        core_2d::graph::{Core2d, Node2d},
+        core_3d::graph::{Core3d, Node3d},
+    },
     prelude::*,
     render::{
         camera::ExtractedCamera,
@@ -70,24 +72,24 @@ impl Plugin for DualBlurPlugin {
                 (prepare_dual_blur_textures.in_set(RenderSet::PrepareResources),),
             )
             // Add dual blur to the 3d render graph;
-            .add_render_graph_node::<ViewNodeRunner<DualBlurNode>>(CORE_3D, DualBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<DualBlurNode>>(Core3d, DualBlurLabel)
             .add_render_graph_edges(
-                CORE_3D,
-                &[
-                    core_3d::graph::node::TONEMAPPING,
-                    DualBlurNode::NAME,
-                    core_3d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core3d,
+                (
+                    Node3d::Tonemapping,
+                    DualBlurLabel,
+                    Node3d::EndMainPassPostProcessing,
+                ),
             )
             // Add dual blur to the 2d render graph
-            .add_render_graph_node::<ViewNodeRunner<DualBlurNode>>(CORE_2D, DualBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<DualBlurNode>>(Core2d, DualBlurLabel)
             .add_render_graph_edges(
-                CORE_2D,
-                &[
-                    core_2d::graph::node::TONEMAPPING,
-                    DualBlurNode::NAME,
-                    core_2d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core2d,
+                (
+                    Node2d::Tonemapping,
+                    DualBlurLabel,
+                    Node2d::EndMainPassPostProcessing,
+                ),
             );
     }
 

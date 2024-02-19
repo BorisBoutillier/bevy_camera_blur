@@ -1,6 +1,8 @@
 use super::settings::{KawaseBlurSettings, KawaseBlurUniforms};
 use super::KAWASE_BLUR_SHADER_HANDLE;
-use bevy::render::render_resource::{FilterMode, UniformBuffer};
+use bevy::render::render_graph::RenderLabel;
+use bevy::render::render_resource::binding_types::{sampler, texture_2d, uniform_buffer};
+use bevy::render::render_resource::{BindGroupLayoutEntries, FilterMode, UniformBuffer};
 use bevy::render::renderer::RenderQueue;
 use bevy::{
     core_pipeline::fullscreen_vertex_shader::fullscreen_shader_vertex_state,
@@ -9,23 +11,22 @@ use bevy::{
     render::{
         render_graph::{NodeRunError, RenderGraphContext, ViewNode},
         render_resource::{
-            BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, FragmentState, MultisampleState, Operations,
-            PipelineCache, PrimitiveState, RenderPassColorAttachment, RenderPassDescriptor,
-            RenderPipelineDescriptor, Sampler, SamplerBindingType, SamplerDescriptor, ShaderStages,
-            ShaderType, TextureFormat, TextureSampleType, TextureViewDimension,
+            BindGroupEntries, BindGroupLayout, CachedRenderPipelineId, FragmentState,
+            MultisampleState, Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
+            RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
+            SamplerDescriptor, ShaderStages, TextureFormat, TextureSampleType,
         },
         renderer::{RenderContext, RenderDevice},
         texture::BevyDefault,
         view::ViewTarget,
     },
 };
+#[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
+pub(crate) struct KawaseBlurLabel;
+
 // The post process node used for the render graph
 #[derive(Default)]
-pub struct KawaseBlurNode;
-impl KawaseBlurNode {
-    pub const NAME: &'static str = "kawase_blur";
-}
+pub(crate) struct KawaseBlurNode;
 
 // The ViewNode trait is required by the ViewNodeRunner
 impl ViewNode for KawaseBlurNode {
@@ -83,6 +84,8 @@ impl ViewNode for KawaseBlurNode {
                     ops: Operations::default(),
                 })],
                 depth_stencil_attachment: None,
+                timestamp_writes: None,
+                occlusion_query_set: None,
             });
 
             render_pass.set_render_pipeline(pipeline);
@@ -107,42 +110,17 @@ impl FromWorld for KawaseBlurPipeline {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
 
-        // Input texture binding
-        let texture = BindGroupLayoutEntry {
-            binding: 0,
-            ty: BindingType::Texture {
-                sample_type: TextureSampleType::Float { filterable: true },
-                view_dimension: TextureViewDimension::D2,
-                multisampled: false,
-            },
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-
-        // Sampler binding
-        let sampler = BindGroupLayoutEntry {
-            binding: 1,
-            ty: BindingType::Sampler(SamplerBindingType::Filtering),
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-        // Settings
-        let settings = BindGroupLayoutEntry {
-            binding: 2,
-            visibility: ShaderStages::FRAGMENT,
-            ty: BindingType::Buffer {
-                ty: bevy::render::render_resource::BufferBindingType::Uniform,
-                has_dynamic_offset: false,
-                min_binding_size: Some(KawaseBlurUniforms::min_size()),
-            },
-            count: None,
-        };
-
-        // Bind group layout
-        let layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-            label: Some("kawase_blur_bind_group_layout"),
-            entries: &[texture, sampler, settings],
-        });
+        let layout = render_device.create_bind_group_layout(
+            "kawase_blur_bind_group_layout",
+            &BindGroupLayoutEntries::sequential(
+                ShaderStages::FRAGMENT,
+                (
+                    texture_2d(TextureSampleType::Float { filterable: true }),
+                    sampler(SamplerBindingType::Filtering),
+                    uniform_buffer::<KawaseBlurUniforms>(false),
+                ),
+            ),
+        );
 
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
         let sampler = render_device.create_sampler(&SamplerDescriptor {

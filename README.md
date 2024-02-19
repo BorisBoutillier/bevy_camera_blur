@@ -23,7 +23,7 @@ See the `examples/` in the [github repository](https://github.com/borisboutillie
 
 |bevy|bevy\_camera\_blur|
 |----|---|
-|0.12|0.1|
+|0.13|main|
 
 
 ## License

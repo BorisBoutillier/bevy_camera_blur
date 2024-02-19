@@ -47,12 +47,12 @@ impl DualBlurSettings {
 }
 
 impl ExtractComponent for DualBlurSettings {
-    type Query = &'static Self;
+    type QueryData = &'static Self;
 
-    type Filter = ();
+    type QueryFilter = ();
     type Out = DualBlurSettings;
 
-    fn extract_component(settings: QueryItem<'_, Self::Query>) -> Option<Self::Out> {
+    fn extract_component(settings: QueryItem<'_, Self::QueryData>) -> Option<Self::Out> {
         if settings.downsampling_passes == 0 {
             None
         } else {

@@ -8,8 +8,10 @@ pub use tweening::*;
 
 use bevy::{
     asset::load_internal_asset,
-    core_pipeline::core_2d::{self, CORE_2D},
-    core_pipeline::core_3d::{self, CORE_3D},
+    core_pipeline::{
+        core_2d::graph::{Core2d, Node2d},
+        core_3d::graph::{Core3d, Node3d},
+    },
     prelude::*,
     render::{
         extract_component::{ExtractComponentPlugin, UniformComponentPlugin},
@@ -70,24 +72,24 @@ impl Plugin for BoxBlurPlugin {
 
         render_app
             // Add box blur to the 3d render graph;
-            .add_render_graph_node::<ViewNodeRunner<BoxBlurNode>>(CORE_3D, BoxBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<BoxBlurNode>>(Core3d, BoxBlurLabel)
             .add_render_graph_edges(
-                CORE_3D,
-                &[
-                    core_3d::graph::node::TONEMAPPING,
-                    BoxBlurNode::NAME,
-                    core_3d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core3d,
+                (
+                    Node3d::Tonemapping,
+                    BoxBlurLabel,
+                    Node3d::EndMainPassPostProcessing,
+                ),
             )
             // Add box blur to the 2d render graph
-            .add_render_graph_node::<ViewNodeRunner<BoxBlurNode>>(CORE_2D, BoxBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<BoxBlurNode>>(Core2d, BoxBlurLabel)
             .add_render_graph_edges(
-                CORE_2D,
-                &[
-                    core_2d::graph::node::TONEMAPPING,
-                    BoxBlurNode::NAME,
-                    core_2d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core2d,
+                (
+                    Node2d::Tonemapping,
+                    BoxBlurLabel,
+                    Node2d::EndMainPassPostProcessing,
+                ),
             );
     }
 

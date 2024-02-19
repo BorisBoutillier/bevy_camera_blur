@@ -5,8 +5,10 @@ pub use settings::KawaseBlurSettings;
 
 use bevy::{
     asset::load_internal_asset,
-    core_pipeline::core_2d::{self, CORE_2D},
-    core_pipeline::core_3d::{self, CORE_3D},
+    core_pipeline::{
+        core_2d::graph::{Core2d, Node2d},
+        core_3d::graph::{Core3d, Node3d},
+    },
     prelude::*,
     render::{
         extract_component::ExtractComponentPlugin,
@@ -62,24 +64,24 @@ impl Plugin for KawaseBlurPlugin {
 
         render_app
             // Add kawase blur to the 3d render graph;
-            .add_render_graph_node::<ViewNodeRunner<KawaseBlurNode>>(CORE_3D, KawaseBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<KawaseBlurNode>>(Core3d, KawaseBlurLabel)
             .add_render_graph_edges(
-                CORE_3D,
-                &[
-                    core_3d::graph::node::TONEMAPPING,
-                    KawaseBlurNode::NAME,
-                    core_3d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core3d,
+                (
+                    Node3d::Tonemapping,
+                    KawaseBlurLabel,
+                    Node3d::EndMainPassPostProcessing,
+                ),
             )
             // Add kawase blur to the 2d render graph
-            .add_render_graph_node::<ViewNodeRunner<KawaseBlurNode>>(CORE_2D, KawaseBlurNode::NAME)
+            .add_render_graph_node::<ViewNodeRunner<KawaseBlurNode>>(Core2d, KawaseBlurLabel)
             .add_render_graph_edges(
-                CORE_2D,
-                &[
-                    core_2d::graph::node::TONEMAPPING,
-                    KawaseBlurNode::NAME,
-                    core_2d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+                Core2d,
+                (
+                    Node2d::Tonemapping,
+                    KawaseBlurLabel,
+                    Node2d::EndMainPassPostProcessing,
+                ),
             );
     }
 

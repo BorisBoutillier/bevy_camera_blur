@@ -4,26 +4,26 @@ use bevy::{
     ecs::query::QueryItem,
     prelude::*,
     render::{
-        render_graph::{NodeRunError, RenderGraphContext, ViewNode},
+        render_graph::{NodeRunError, RenderGraphContext, RenderLabel, ViewNode},
         render_resource::{
-            BindGroupEntries, BindGroupLayout, BindGroupLayoutDescriptor, BindGroupLayoutEntry,
-            BindingType, CachedRenderPipelineId, FilterMode, FragmentState, MultisampleState,
-            Operations, PipelineCache, PrimitiveState, RenderPassColorAttachment,
-            RenderPassDescriptor, RenderPipelineDescriptor, Sampler, SamplerBindingType,
-            SamplerDescriptor, ShaderStages, TextureFormat, TextureSampleType,
-            TextureViewDimension,
+            binding_types::{sampler, texture_2d},
+            BindGroupEntries, BindGroupLayout, BindGroupLayoutEntries, CachedRenderPipelineId,
+            FilterMode, FragmentState, MultisampleState, Operations, PipelineCache, PrimitiveState,
+            RenderPassColorAttachment, RenderPassDescriptor, RenderPipelineDescriptor, Sampler,
+            SamplerBindingType, SamplerDescriptor, ShaderStages, TextureFormat, TextureSampleType,
         },
         renderer::{RenderContext, RenderDevice},
         texture::BevyDefault,
         view::ViewTarget,
     },
 };
+
+#[derive(Debug, Hash, PartialEq, Eq, Clone, RenderLabel)]
+pub(crate) struct DualBlurLabel;
+
 // The post process node used for the render graph
 #[derive(Default)]
 pub(crate) struct DualBlurNode;
-impl DualBlurNode {
-    pub const NAME: &'static str = "dual_blur";
-}
 
 // The ViewNode trait is required by the ViewNodeRunner
 impl ViewNode for DualBlurNode {
@@ -85,6 +85,8 @@ impl ViewNode for DualBlurNode {
                             ops: Operations::default(),
                         })],
                         depth_stencil_attachment: None,
+                        timestamp_writes: None,
+                        occlusion_query_set: None,
                     });
 
                 render_pass.set_render_pipeline(downsample_pipeline);
@@ -121,6 +123,8 @@ impl ViewNode for DualBlurNode {
                             ops: Operations::default(),
                         })],
                         depth_stencil_attachment: None,
+                        timestamp_writes: None,
+                        occlusion_query_set: None,
                     });
 
                 render_pass.set_render_pipeline(upsample_pipeline);
@@ -146,31 +150,16 @@ impl FromWorld for DualBlurPipeline {
     fn from_world(world: &mut World) -> Self {
         let render_device = world.resource::<RenderDevice>();
 
-        // Input texture binding
-        let texture = BindGroupLayoutEntry {
-            binding: 0,
-            ty: BindingType::Texture {
-                sample_type: TextureSampleType::Float { filterable: true },
-                view_dimension: TextureViewDimension::D2,
-                multisampled: false,
-            },
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-
-        // Sampler binding
-        let sampler = BindGroupLayoutEntry {
-            binding: 1,
-            ty: BindingType::Sampler(SamplerBindingType::Filtering),
-            visibility: ShaderStages::FRAGMENT,
-            count: None,
-        };
-
-        // Bind group layout
-        let layout = render_device.create_bind_group_layout(&BindGroupLayoutDescriptor {
-            label: Some("dual_blur_bind_group_layout"),
-            entries: &[texture, sampler],
-        });
+        let layout = render_device.create_bind_group_layout(
+            "dual_blur_bind_group_layout",
+            &BindGroupLayoutEntries::sequential(
+                ShaderStages::FRAGMENT,
+                (
+                    texture_2d(TextureSampleType::Float { filterable: true }),
+                    sampler(SamplerBindingType::Filtering),
+                ),
+            ),
+        );
 
         // We can create the sampler here since it won't change at runtime and doesn't depend on the view
         let sampler = render_device.create_sampler(&SamplerDescriptor {

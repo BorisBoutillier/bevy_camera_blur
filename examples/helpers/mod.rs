@@ -15,7 +15,7 @@ use bevy_camera_blur::*;
 mod blursettings_ui;
 use blursettings_ui::*;
 
-pub mod animation;
+//pub mod animation;
 pub mod showcase;
 
 pub fn common_app() -> App {
@@ -25,7 +25,6 @@ pub fn common_app() -> App {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     present_mode: PresentMode::AutoNoVsync,
-                    fit_canvas_to_parent: true,
                     ..default()
                 }),
                 ..default()
@@ -70,7 +69,7 @@ pub fn update_fps_ui(
 ) {
     let mut text = query.single_mut();
 
-    if let Some(fps) = diagnostics.get(FrameTimeDiagnosticsPlugin::FPS) {
+    if let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) {
         if let Some(sma) = fps.smoothed() {
             text.sections[0].value = format!("FPS: {sma:3.1}");
         }
@@ -109,13 +108,16 @@ pub fn setup_3d_scene(
         println!("Similarly as for the bevy scene_viewer example\n");
         // Spawn a simple 3D scene
         commands.spawn(PbrBundle {
-            mesh: meshes.add(shape::Plane::from_size(5.0).into()),
-            material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+            mesh: meshes.add(Circle::new(4.0)),
+            material: materials.add(Color::DARK_GREEN),
+            transform: Transform::from_rotation(Quat::from_rotation_x(
+                -std::f32::consts::FRAC_PI_2,
+            )),
             ..default()
         });
         commands.spawn(PbrBundle {
-            mesh: meshes.add(Mesh::from(shape::Cube { size: 1.0 })),
-            material: materials.add(Color::rgb(0.8, 0.7, 0.6).into()),
+            mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
+            material: materials.add(Color::MIDNIGHT_BLUE),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         });
@@ -123,7 +125,7 @@ pub fn setup_3d_scene(
     // Directional light that will be animated
     commands.spawn((DirectionalLightBundle {
         directional_light: DirectionalLight {
-            illuminance: 40000.0,
+            illuminance: light_consts::lux::AMBIENT_DAYLIGHT,
             shadows_enabled: true,
             ..default()
         },
@@ -148,7 +150,7 @@ pub fn setup_2d_scene(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     commands.spawn(MaterialMesh2dBundle {
-        mesh: meshes.add(Mesh::from(shape::Quad::default())).into(),
+        mesh: meshes.add(Rectangle::default()).into(),
         transform: Transform::default().with_scale(Vec3::splat(128.)),
         material: materials.add(ColorMaterial::from(Color::PURPLE)),
         ..default()
