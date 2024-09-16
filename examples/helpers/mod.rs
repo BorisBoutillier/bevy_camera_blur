@@ -15,7 +15,7 @@ use bevy_camera_blur::*;
 mod blursettings_ui;
 use blursettings_ui::*;
 
-//pub mod animation;
+pub mod animation;
 pub mod showcase;
 
 pub fn common_app() -> App {
@@ -109,7 +109,7 @@ pub fn setup_3d_scene(
         // Spawn a simple 3D scene
         commands.spawn(PbrBundle {
             mesh: meshes.add(Circle::new(4.0)),
-            material: materials.add(Color::DARK_GREEN),
+            material: materials.add(Color::Srgba(bevy::color::palettes::css::DARK_GREEN)),
             transform: Transform::from_rotation(Quat::from_rotation_x(
                 -std::f32::consts::FRAC_PI_2,
             )),
@@ -117,7 +117,7 @@ pub fn setup_3d_scene(
         });
         commands.spawn(PbrBundle {
             mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
-            material: materials.add(Color::MIDNIGHT_BLUE),
+            material: materials.add(Color::Srgba(bevy::color::palettes::css::MIDNIGHT_BLUE)),
             transform: Transform::from_xyz(0.0, 0.5, 0.0),
             ..default()
         });
@@ -152,7 +152,9 @@ pub fn setup_2d_scene(
     commands.spawn(MaterialMesh2dBundle {
         mesh: meshes.add(Rectangle::default()).into(),
         transform: Transform::default().with_scale(Vec3::splat(128.)),
-        material: materials.add(ColorMaterial::from(Color::PURPLE)),
+        material: materials.add(ColorMaterial::from(Color::Srgba(
+            bevy::color::palettes::css::PURPLE,
+        ))),
         ..default()
     });
     // Camera
@@ -166,11 +168,13 @@ const BLURSTATE_COUNT: usize = 5;
 #[derive(States, Hash, Default, Debug, PartialEq, Eq, Clone, Copy)]
 pub enum BlurType {
     None = 0,
-    #[default]
     Gaussian = 1,
     Box = 2,
     Kawase = 3,
     Dual = 4,
+    // Used at start to setup the scene.
+    #[default]
+    Setup = 999,
 }
 impl BlurType {
     pub fn next(&self) -> Self {
@@ -194,6 +198,10 @@ impl From<usize> for BlurType {
     }
 }
 
+fn transition_to_gaussian(mut state: ResMut<NextState<BlurType>>) {
+    state.set(BlurType::Gaussian);
+}
+
 #[derive(Component)]
 pub struct BlurTypeUiText;
 
@@ -202,7 +210,10 @@ pub fn update_blurtype_ui(
     mut text: Query<&mut Text, With<BlurTypeUiText>>,
 ) {
     if state.is_changed() {
-        text.single_mut().sections[0].value = format!("{:?}", state.get());
+        let Ok(mut text) = text.get_single_mut() else {
+            return;
+        };
+        text.sections[0].value = format!("{:?}", state.get());
     }
 }
 
@@ -226,7 +237,7 @@ pub fn setup_blurtype_ui(mut commands: Commands) {
                     "",
                     TextStyle {
                         font_size: 30.0,
-                        color: Color::ANTIQUE_WHITE,
+                        color: Color::Srgba(bevy::color::palettes::css::ANTIQUE_WHITE),
 
                         ..default()
                     },

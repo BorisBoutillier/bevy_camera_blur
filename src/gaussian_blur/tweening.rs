@@ -48,7 +48,11 @@ impl crate::BlurSettingLens<GaussianBlurSettings> for GaussianBlurLens {
     }
 }
 impl Lens<GaussianBlurSettings> for GaussianBlurLens {
-    fn lerp(&mut self, target: &mut GaussianBlurSettings, ratio: f32) {
+    fn lerp(
+        &mut self,
+        target: &mut dyn bevy_tweening::Targetable<GaussianBlurSettings>,
+        ratio: f32,
+    ) {
         let v1 = self.start.kernel_size as f32;
         let v2 = self.end.kernel_size as f32;
         target.kernel_size = {

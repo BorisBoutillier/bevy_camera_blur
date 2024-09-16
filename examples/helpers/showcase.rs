@@ -13,7 +13,15 @@ pub fn common_showcase_app() -> App {
     .insert_resource(ResComp::<BoxBlurSettings>::default())
     .insert_resource(ResComp::<KawaseBlurSettings>::default())
     .insert_resource(ResComp::<DualBlurSettings>::default())
-    .add_systems(Startup, (setup_blurtype_ui, setup_blur_settings_ui))
+    .add_systems(
+        Update,
+        (
+            setup_blurtype_ui,
+            setup_blur_settings_ui,
+            transition_to_gaussian,
+        )
+            .run_if(in_state(BlurType::Setup)),
+    )
     .add_systems(
         Update,
         (
@@ -37,13 +45,6 @@ pub fn common_showcase_app() -> App {
     .add_systems(OnEnter(BlurType::Kawase), add_blur::<KawaseBlurSettings>)
     .add_systems(OnExit(BlurType::Kawase), del_blur::<KawaseBlurSettings>);
     app
-}
-
-fn setup_camera(mut commands: Commands) {
-    commands.spawn((Camera3dBundle {
-        transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default()
-    },));
 }
 
 fn add_blur<C: Component + Clone>(

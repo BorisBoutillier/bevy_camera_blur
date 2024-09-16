@@ -12,6 +12,7 @@ pub struct GaussianBlurSettings {
     /// - It must be odd, else the first higher odd value will be used.
     /// - A value of 1 correspond to no blur, and will entirely skip the post-processing effect.
     /// - It defaults to 31 (sigma = 5).
+    ///
     /// The associated `sigma` value for the gaussian function will be computed as `(kernel_size-1)/6`, so that the kernel extends to  a `3*sigma` range.
     ///
     /// The computational cost of the gaussian blur post-processing effect is `2*kernel_size` texture sampling per pixels.

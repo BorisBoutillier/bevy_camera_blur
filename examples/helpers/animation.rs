@@ -22,11 +22,16 @@ pub fn common_animation_app() -> App {
     .init_state::<GameState>()
     .insert_resource(AnimationDurationMs(500))
     .add_systems(
-        Startup,
+        Update,
         (
-            setup_animation_ui,
-            setup_blurtype_ui,
-            setup_blur_settings_ui,
+            (
+                setup_animation_ui,
+                setup_blurtype_ui,
+                setup_blur_settings_ui,
+                transition_to_menu,
+            )
+                .run_if(in_state(GameState::Setup)),
+            transition_to_gaussian.run_if(in_state(BlurType::Setup)),
         ),
     )
     .add_systems(
@@ -79,39 +84,44 @@ pub fn common_animation_app() -> App {
 }
 
 #[derive(States, Hash, Default, Debug, PartialEq, Eq, Clone, Copy)]
-enum GameState {
+pub enum GameState {
     #[default]
+    Setup,
     Menu,
     Game,
 }
 const ANIMATABLE_BLURTYPES: [BlurType; 3] = [BlurType::Gaussian, BlurType::Box, BlurType::Dual];
+
+fn transition_to_menu(mut state: ResMut<NextState<GameState>>) {
+    state.set(GameState::Menu);
+}
 
 fn update_blurtype(
     state: Res<State<BlurType>>,
     input: Res<ButtonInput<KeyCode>>,
     mut next_state: ResMut<NextState<BlurType>>,
 ) {
-    if input.just_pressed(KeyCode::Left) {
+    if input.just_pressed(KeyCode::ArrowLeft) {
         let mut new = state.prev();
         while !ANIMATABLE_BLURTYPES.contains(&new) {
             new = new.prev();
         }
         next_state.set(new);
     }
-    if input.just_pressed(KeyCode::Right) {
+    if input.just_pressed(KeyCode::ArrowRight) {
         let mut new = state.next();
         while !ANIMATABLE_BLURTYPES.contains(&new) {
             new = new.next();
         }
         next_state.set(new);
     }
-    if input.just_pressed(KeyCode::Key0) {
+    if input.just_pressed(KeyCode::Digit0) {
         next_state.set(ANIMATABLE_BLURTYPES[0]);
     }
-    if input.just_pressed(KeyCode::Key1) {
+    if input.just_pressed(KeyCode::Digit1) {
         next_state.set(ANIMATABLE_BLURTYPES[1]);
     }
-    if input.just_pressed(KeyCode::Key2) {
+    if input.just_pressed(KeyCode::Digit2) {
         next_state.set(ANIMATABLE_BLURTYPES[2]);
     }
 }
@@ -123,7 +133,9 @@ fn gamestate_interaction(
     mut duration: ResMut<AnimationDurationMs>,
     mut text: Query<&mut Text, With<AnimationUiText>>,
 ) {
-    let mut text = text.single_mut();
+    let Ok(mut text) = text.get_single_mut() else {
+        return;
+    };
     let text = &mut text.sections[0].value;
 
     *text = "Animation example:\n".to_string();
@@ -135,14 +147,15 @@ fn gamestate_interaction(
 
     if input.just_pressed(KeyCode::Space) {
         next_state.set(match state.get() {
+            GameState::Setup => GameState::Setup,
             GameState::Menu => GameState::Game,
             GameState::Game => GameState::Menu,
         })
     }
-    if input.just_pressed(KeyCode::Up) {
+    if input.just_pressed(KeyCode::ArrowUp) {
         duration.0 += 100;
     }
-    if input.just_pressed(KeyCode::Down) {
+    if input.just_pressed(KeyCode::ArrowDown) {
         duration.0 = duration.0.max(100) - 100;
     }
 }
@@ -200,7 +213,7 @@ fn spawn_menu(mut commands: Commands, mut settings_ui: Query<&mut BlurSettingsUi
                         ..default()
                     },
                     border_color: BorderColor(Color::BLACK),
-                    background_color: Color::MIDNIGHT_BLUE.into(),
+                    background_color: bevy::color::palettes::css::MIDNIGHT_BLUE.into(),
                     ..default()
                 })
                 .with_children(|parent| {
@@ -208,7 +221,7 @@ fn spawn_menu(mut commands: Commands, mut settings_ui: Query<&mut BlurSettingsUi
                         "Menu",
                         TextStyle {
                             font_size: 16.0,
-                            color: Color::ANTIQUE_WHITE,
+                            color: Color::Srgba(bevy::color::palettes::css::ANTIQUE_WHITE),
                             ..default()
                         },
                     ));
@@ -241,9 +254,9 @@ fn blur_settings_color<C: Component>(
             .map(|animator| animator.tweenable().progress() < 1.0)
             .unwrap_or(false)
     {
-        Color::GRAY
+        Color::Srgba(bevy::color::palettes::css::GRAY)
     } else {
-        Color::WHITE
+        Color::Srgba(bevy::color::palettes::css::WHITE)
     }
 }
 fn animate_blur<C: Component + Clone + BlurSetting, L: BlurSettingLens<C>>(
@@ -285,6 +298,7 @@ fn add_blur<C: Component + Clone + BlurSetting>(
     commands
         .entity(camera.single())
         .insert(match game_state.get() {
+            GameState::Setup => res_settings.0.clone(),
             GameState::Menu => res_settings.0.clone(),
             GameState::Game => C::NO_BLUR,
         });

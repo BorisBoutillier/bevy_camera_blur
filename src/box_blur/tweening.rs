@@ -48,7 +48,7 @@ impl crate::BlurSettingLens<BoxBlurSettings> for BoxBlurLens {
     }
 }
 impl Lens<BoxBlurSettings> for BoxBlurLens {
-    fn lerp(&mut self, target: &mut BoxBlurSettings, ratio: f32) {
+    fn lerp(&mut self, target: &mut dyn bevy_tweening::Targetable<BoxBlurSettings>, ratio: f32) {
         target.passes = (self.start.passes as f32
             + (self.end.passes as f32 - self.start.passes as f32) * ratio)
             .round() as u32;

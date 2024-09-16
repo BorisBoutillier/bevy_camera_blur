@@ -58,7 +58,7 @@ impl Plugin for KawaseBlurPlugin {
 
         app.add_plugins((ExtractComponentPlugin::<KawaseBlurSettings>::default(),));
 
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;
         };
 
@@ -86,7 +86,7 @@ impl Plugin for KawaseBlurPlugin {
     }
 
     fn finish(&self, app: &mut App) {
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;
         };
 

@@ -62,7 +62,7 @@ impl Plugin for DualBlurPlugin {
 
         app.add_plugins((ExtractComponentPlugin::<DualBlurSettings>::default(),));
 
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;
         };
 
@@ -94,7 +94,7 @@ impl Plugin for DualBlurPlugin {
     }
 
     fn finish(&self, app: &mut App) {
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
+        let Some(render_app) = app.get_sub_app_mut(RenderApp) else {
             return;
         };
 
